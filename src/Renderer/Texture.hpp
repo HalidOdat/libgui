@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core/Base.hpp"
+#include "Asset.hpp"
 
 namespace Gui {
 
@@ -122,7 +123,7 @@ namespace Gui {
 
       u32 mColor = 0xFFFFFFFF;
 
-      StringView mFile;
+      Asset::Handle mAsset;
 
       const void*         mData = nullptr;
       Texture::DataFormat mDataFormat = Texture::DataFormat::Rgba;
@@ -134,7 +135,7 @@ namespace Gui {
 
   public:
     [[nodiscard]] static Texture::Builder builder();
-    [[nodiscard]] static Texture::Builder load(const String& filepath, bool verticalFlipOnLoad = true);
+    [[nodiscard]] static Texture::Builder load(const Asset::Handle asset, bool verticalFlipOnLoad = true);
     [[nodiscard]] static Texture::Builder buffer(u32 width, u32 height);
     [[nodiscard]] static Texture::Builder buffer(const void* inData, u32 width, u32 height, Texture::DataFormat dataFormat, Texture::DataType dataType);
     [[nodiscard]] static Texture::Builder color(u32 color);
@@ -148,11 +149,16 @@ namespace Gui {
     u32 getId() const;
     u32 getWidth() const;
     u32 getHeight() const;
-  
+
     bool reload();
 
     inline const Specification&  getSpecification() const { return mData.specification; }
-    inline const Option<String>& getFilePath() const { return mData.filePath; }
+    inline const Option<String> getFilePath() const {
+      if (!mData.asset) {
+        return std::nullopt;
+      }
+      return mData.asset->filepath();
+    }
     inline Texture::Type getType() const { return mData.type; }
     inline u32 getColor() const { return mData.color; }
 
@@ -166,7 +172,7 @@ namespace Gui {
 
       Specification specification;
       Texture::Type type;
-      Option<String> filePath = std::nullopt;
+      Asset::Handle asset = nullptr;
       u32 color{};
     };
 

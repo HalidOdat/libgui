@@ -3,13 +3,15 @@
 #include <algorithm>
 
 #include "Core/OpenGL.hpp"
-
 #include "Renderer/Shader.hpp"
-
 #include "Utils/String.hpp"
-#include "Utils/File.hpp"
 
 #include <cstring>
+#include <string>
+
+using namespace std::literals;
+
+#include <assets.hpp>
 
 namespace Gui {
 
@@ -68,12 +70,12 @@ namespace Gui {
   }
 
   static std::vector<std::pair<Shader::Type, std::string>> parse(
-    const StringView& filename,
+    const Asset::Handle asset,
     Shader::Version version,
     const std::unordered_map<String, String>& definitions,
     const std::unordered_map<String, String>& globalDefines
   ) {
-    Logger::info("Shader: %s", filename.data());
+    Logger::info("Shader: %s", asset->filepath().c_str());
     const StringView typeDelimiter = "@type ";
 
     std::vector<std::pair<Shader::Type, std::string>> result;
@@ -97,20 +99,32 @@ namespace Gui {
       stringDefinitions += '\n';
     }
 
-    FILE* file = fopen(filename.data(), "r");
-    if (!file) {
-      Logger::error("cannot open file '%s': %s", filename.data(), strerror(errno));
+    if (!asset->load()) {
+      Logger::error("cannot open file '%s': %s", asset->filepath().c_str(), strerror(errno));
       return {};
     }
 
-    char line[256];
     std::string type;
     std::string content;
-    while (fgets(line, sizeof(line), file)) {
-      // Remove trailing newline caused by fgets, if there is.
-      line[strcspn(line, "\n")] = '\0';
 
-      if (strncmp(line, typeDelimiter.data(), typeDelimiter.size()) == 0) {
+    std::string_view file((char*)asset->data());
+    while (!file.empty()) {
+      auto position = file.find_first_of("\n");
+      auto line = file.substr(0, position);
+
+      Logger::info("-- %.*s", line.size(), line.data());
+      if (position == std::string_view::npos) {
+        if (file.empty()) {
+          break;
+        }
+        file.remove_prefix(std::min(file.find_first_not_of("\n"), file.size()));
+        line = file;
+        file = ""sv;
+      } else {
+        file = file.substr(position + 1);
+      }
+
+      if (line.size() > typeDelimiter.size() && strncmp(line.data(), typeDelimiter.data(), typeDelimiter.size()) == 0) {
         if (!common) {
           common = String(shaderVersionToStringDirectiveAndVersionMacros(version)) + '\n' + stringDefinitions + content + '\n';
         } else {
@@ -122,7 +136,7 @@ namespace Gui {
           if (std::any_of(result.begin(), result.end(), [shaderType](const auto& value){
             return value.first == shaderType;
           })) {
-            Logger::error("Duplicate shader type '%s' in %s", shaderTypeToString(*shaderType), filename.data());
+            Logger::error("Duplicate shader type '%s' in %s", shaderTypeToString(*shaderType), asset->filepath().c_str());
             return {};
           }
 
@@ -139,7 +153,8 @@ namespace Gui {
       content += '\n';
     }
 
-    fclose(file);
+    // FIXME: should free asset somehow
+    // fclose(file);
 
     auto shaderType = stringToShaderType(type);
     if (!shaderType) {
@@ -149,20 +164,22 @@ namespace Gui {
     if (std::any_of(result.begin(), result.end(), [shaderType](const auto& value){
       return value.first == shaderType;
     })) {
-      Logger::error("Duplicate shader type '%s' in %s", shaderTypeToString(*shaderType), filename.data());
+      Logger::error("Duplicate shader type '%s' in %s", shaderTypeToString(*shaderType), asset->filepath().c_str());
       return {};
     }
 
     result.emplace_back(std::make_pair(*shaderType, *common + content));
-    
+
     if (!std::any_of(result.begin(), result.end(), [](const auto& value){
         return value.first == Shader::Type::Vertex;
     }) || !std::any_of(result.begin(), result.end(), [](const auto& value){
         return value.first == Shader::Type::Fragment;
     })) {
-      Logger::error("Shader program '%s' must contain a vertex and fragment shaders", filename.data());
+      Logger::error("Shader program '%s' must contain a vertex and fragment shaders", asset->filepath().c_str());
       return {};
     }
+
+    Logger::info("Loaded");
 
     return result;
   }
@@ -178,9 +195,7 @@ namespace Gui {
   }
 
   Shader::Handle Shader::Builder::build() {
-    auto filepath = String(mFilePath);
-
-    auto parts = parse(filepath, mVersion, mDefinitions, sGlobalDefines);
+    auto parts = parse(mAsset, mVersion, mDefinitions, sGlobalDefines);
     if (parts.empty()) {
       return nullptr;
     }
@@ -250,7 +265,7 @@ namespace Gui {
       Logger::trace("Shader: Materials block binding at 2");
     }
 
-    return std::make_shared<Shader>(shaderProgram, String(filepath));
+    return std::make_shared<Shader>(shaderProgram, mAsset);
   }
 
   u32 Shader::compile(Type type, const char* source) noexcept {
@@ -271,9 +286,9 @@ namespace Gui {
     return id;
   }
 
-  Shader::Builder Shader::load(const StringView& path) {
+  Shader::Builder Shader::load(const Asset::Handle asset) {
     Builder builder;
-    builder.mFilePath = path;
+    builder.mAsset = asset;
     return builder;
   }
 
@@ -282,20 +297,20 @@ namespace Gui {
   }
 
   bool Shader::reload() {
-    if (!mFilePath.has_value()) {
-      return false;
-    }
+    // if (!mFilePath.has_value()) {
+    //   return false;
+    // }
 
     // TODO: fix shader reload
     GUI_TODO("");
 
-    auto data = Shader::load(*mFilePath).build();
-    if (data) {
-      Logger::trace("Reloaded shader: %s", mFilePath.value().c_str());
+    // auto data = Shader::load(*mFilePath).build();
+    // if (data) {
+    //   Logger::trace("Reloaded shader: %s", mFilePath.value().c_str());
 
-      glDeleteProgram(id);
-      return true;
-    }
+    //   glDeleteProgram(id);
+    //   return true;
+    // }
 
     return false;
   }
@@ -373,3 +388,4 @@ namespace Gui {
   }
 
 } // namespace Gui
+
