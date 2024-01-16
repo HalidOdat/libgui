@@ -35,7 +35,6 @@ add_library(${This} STATIC
   src/Core/Macro.hpp
   src/Core/Log.hpp
   src/Core/Log.cpp
-  src/Core/KeyCode.hpp
   src/Core/Color.hpp
   src/Core/OpenGL.hpp
   src/Core/Base.hpp

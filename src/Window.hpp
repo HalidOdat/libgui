@@ -3,8 +3,7 @@
 #include <functional>
 
 #include "Core/Type.hpp"
-#include "Core/KeyCode.hpp"
-#include "Events/Event.hpp"
+#include "Events/KeyEvent.hpp"
 
 // Forward declare
 struct GLFWwindow;
