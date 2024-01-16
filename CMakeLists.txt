@@ -33,7 +33,6 @@ message(STATUS "${This}: Assets directory path: ${ASSETS_DIRECTOY}")
 add_library(${This} STATIC
   src/Core/Type.hpp
   src/Core/Macro.hpp
-  src/Core/Macro.cpp
   src/Core/Log.hpp
   src/Core/Log.cpp
   src/Core/KeyCode.hpp
