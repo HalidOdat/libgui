@@ -38,7 +38,7 @@ add_library(${This} STATIC
   src/Core/Color.hpp
   src/Core/OpenGL.hpp
   src/Core/Base.hpp
-  
+
   src/Utils/File.hpp
   src/Utils/File.cpp
   src/Utils/String.hpp
@@ -71,6 +71,14 @@ add_library(${This} STATIC
   src/Renderer/CameraController.cpp
   src/Renderer/Renderer2D.hpp
   src/Renderer/Renderer2D.cpp
+
+  src/Widget/Constraints.hpp
+  src/Widget/Container.cpp
+  src/Widget/Widget.cpp
+  src/Widget/Widget.hpp
+  src/Widget/Container.hpp
+  src/Widget/SizedBox.cpp
+  src/Widget/SizedBox.hpp
 
   src/Window.hpp
   src/Window.cpp
