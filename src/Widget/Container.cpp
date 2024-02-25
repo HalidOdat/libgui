@@ -16,12 +16,15 @@ void ContainerWidget::addChild(Widget::Handle child) {
 }
 
 Vec2 ContainerWidget::layout(const Constraints& constraints) {
+  Vec2 position = mPosition;
   float totalWidth = 0;
   float totalHeight = 0;
   for (auto& child : mChildren) {
-      auto childSize = child->layout(constraints);
-      totalWidth = std::max(totalWidth, childSize.x);
-      totalHeight += childSize.y;
+    child->setPosition(position);
+    auto childSize = child->layout(constraints);
+    totalWidth = std::max(totalWidth, childSize.x);
+    totalHeight += childSize.y;
+    position.y += childSize.y;
   }
 
   mSize.x = std::max(constraints.minWidth, std::min(constraints.maxWidth, totalWidth));

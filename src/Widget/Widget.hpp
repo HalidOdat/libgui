@@ -16,8 +16,9 @@ public:
 
     virtual Vec2 layout(const Constraints& constraints) = 0;
     virtual void reportSize() const;
-
     virtual void draw(Renderer2D& renderer) = 0;
+
+    void setPosition(Vec2 position) { mPosition = position; }
 
 protected:
     Widget() = default;
