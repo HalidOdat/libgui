@@ -16,16 +16,27 @@ void ContainerWidget::addChild(Widget::Handle child) {
 }
 
 Vec2 ContainerWidget::layout(const Constraints& constraints) {
-  Vec2 position = mPosition;
-  float totalWidth = 0;
-  float totalHeight = 0;
+  auto position = Vec2{mPosition.x + mPadding.x, mPosition.y + mPadding.w};
+  auto totalWidth  = 0.0f;
+  auto totalHeight = 0.0f;
   for (auto& child : mChildren) {
-    child->setPosition(position);
+    child->setPosition(position); // Parent tells the child what position to be at!
     auto childSize = child->layout(constraints);
+
     totalWidth = std::max(totalWidth, childSize.x);
     totalHeight += childSize.y;
-    position.y += childSize.y;
+    position.y  += childSize.y;
   }
+
+  // x --> top
+  // y --> right
+  // z --> bottom
+  // w --> left
+  //
+  // TODO: Maybe having just VecN (N = 2,3,4) does not convey the meaning,
+  //       Add structure for padding with the named fields.
+  totalWidth  += mPadding.w + mPadding.y;
+  totalHeight += mPadding.x + mPadding.z;
 
   mSize.x = std::max(constraints.minWidth, std::min(constraints.maxWidth, totalWidth));
   mSize.y = std::max(constraints.minHeight, std::min(constraints.maxHeight, totalHeight));

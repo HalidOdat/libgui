@@ -15,6 +15,7 @@ public:
 
   void addChild(Widget::Handle child);
   void setColor(Vec4 color) { mColor = color; }
+  void setPadding(Vec4 padding) { mPadding = padding; }
 
   Vec2 layout(const Constraints& constraints) override;
   void reportSize() const override;
@@ -31,6 +32,8 @@ public: // Do NOT use these function use the create functions!
 private:
   std::vector<Widget::Handle> mChildren;
   Vec4 mColor;
+
+  Vec4 mPadding{};
 };
 
 } // namespace Gui

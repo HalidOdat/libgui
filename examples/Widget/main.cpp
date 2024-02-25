@@ -32,14 +32,18 @@ int main() {
     );
 
     auto container = Gui::ContainerWidget::create();
-    auto child1 = Gui::SizedBoxWidget::create(30, 40);
+    auto child1 = Gui::SizedBoxWidget::create(100, 100);
     child1->setColor(Gui::Color::RED);
-    auto child2 = Gui::SizedBoxWidget::create(30, 40);
+    auto child2 = Gui::SizedBoxWidget::create(100, 100);
     child2->setColor(Gui::Color::BLUE);
     container->addChild(child1);
     container->addChild(child2);
 
-    container->layout({10, 10, 100, 100});
+    container->setPosition({200, 200});
+
+    container->setPadding({20, 20, 20, 20});
+
+    container->layout({0, 0, 1000, 1000});
     container->setColor(Gui::Color::GREEN);
     container->reportSize();
 
