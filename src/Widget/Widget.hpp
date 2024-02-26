@@ -3,8 +3,6 @@
 #include "Widget/Constraints.hpp"
 #include "Renderer/Renderer2D.hpp"
 
-#include <iostream>
-
 namespace Gui {
 
 class Widget {

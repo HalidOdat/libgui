@@ -1,3 +1,4 @@
+#include "Core/Base.hpp"
 #include "Utils/File.hpp"
 
 #include <cstdio>

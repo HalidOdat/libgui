@@ -3,6 +3,8 @@
 #include "Core/Base.hpp"
 #include "Renderer/Texture.hpp"
 
+#include <vector>
+
 namespace Gui {
 
   class FrameBuffer {

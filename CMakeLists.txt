@@ -161,26 +161,29 @@ if (NOT DEFINED WEB)
   )
 endif()
 
-target_precompile_headers(${This}
-  PUBLIC
-    # Common include
-    <Core/Base.hpp>
+# It seems that CLion has some issues with MINGW with PCH so we don't include them.
+#
+# See: https://github.com/msys2/MINGW-packages/issues/5719
+#
+# Detecting CLion: https://www.jetbrains.com/help/clion/detecting-origin-of-cmake-invocation.html
+if ($ENV{CLION_IDE})
+  message(STATUS "CLion detected not including pch -- $ENV{CLION_IDE}")
+else()
+  message(STATUS "CLion not detected including pch -- $ENV{CLION_IDE}")
+  target_precompile_headers(${This}
+    PUBLIC
+      # Common include
+      <Core/Base.hpp>
 
-  PRIVATE
-    # Standard library
-    <cstdio>
-    <cstdlib>
-    <cstdint>
-    <cstddef>
-    <string>
-    <string_view>
-    <vector>
-    <array>
-    <memory>
-    <optional>
-    <unordered_map>
-    <type_traits>
-)
+    PRIVATE
+      # Standard library
+      <cstdio>
+      <string>
+      <string_view>
+      <vector>
+      <memory>
+  )
+endif()
 
 target_compile_definitions(${This}
   PUBLIC

@@ -2,6 +2,8 @@
 
 #include "Core/Base.hpp"
 
+#include <vector>
+
 namespace Gui {
 
   struct Buffer {
