@@ -7,4 +7,6 @@ add_executable(${This}
 
 target_link_libraries(${This} PRIVATE
   ${PROJECT_NAME}
+  # Create static builds
+  -static
 )

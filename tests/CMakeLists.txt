@@ -9,6 +9,8 @@ add_executable(${This}
 target_link_libraries(${This} PRIVATE
   ${PROJECT_NAME}
   Catch2::Catch2WithMain
+  # Create static builds
+  -static
 )
 
 add_test(
