@@ -89,13 +89,13 @@ namespace Gui {
       Vec4{ 0.0f,  0.0f, 0.0f, 1.0f }, // top    left 
     };
 
-    static constexpr const u32 QUAD_MAX              = 1024;
+    static constexpr const u32 RECT_MAX              = 1024;
     static constexpr const u32 QUAD_VERTICES_COUNT   = 4;
     static constexpr const u32 QUAD_INDICES_COUNT    = 6;
-    static constexpr const u32 QUAD_VERTEX_BUFFER_BYTE_SIZE = QUAD_MAX * QUAD_VERTICES_COUNT * sizeof(QuadVertex);
-    static constexpr const u32 QUAD_INDEX_BUFFER_COUNT      = QUAD_MAX * QUAD_INDICES_COUNT;
+    static constexpr const u32 QUAD_VERTEX_BUFFER_BYTE_SIZE = RECT_MAX * QUAD_VERTICES_COUNT * sizeof(QuadVertex);
+    static constexpr const u32 QUAD_INDEX_BUFFER_COUNT      = RECT_MAX * QUAD_INDICES_COUNT;
 
-    static constexpr const u32 CIRCLE_MAX              = QUAD_MAX;
+    static constexpr const u32 CIRCLE_MAX              = RECT_MAX;
     static constexpr const u32 CIRCLE_VERTICES_COUNT   = 4;
     static constexpr const u32 CIRCLE_INDICES_COUNT    = 6;
     static constexpr const u32 CIRCLE_VERTEX_BUFFER_BYTE_SIZE = CIRCLE_MAX * CIRCLE_VERTICES_COUNT * sizeof(CircleVertex);

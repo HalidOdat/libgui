@@ -51,7 +51,7 @@ namespace Gui {
     mQuadShader->bind();
     mQuadShader->setVec2("uResolution", Vec2{mWidth, mHeight});
 
-    mQuadBasePtr = new QuadVertex[QUAD_MAX * QUAD_VERTICES_COUNT];
+    mQuadBasePtr = new QuadVertex[RECT_MAX * QUAD_VERTICES_COUNT];
     mQuadCurrentPtr = mQuadBasePtr;
     mQuadCount = 0;
 
@@ -161,7 +161,7 @@ namespace Gui {
 
     transform = glm::scale(transform, glm::vec3(size, 1.0f)); 
 
-    if (mQuadCount >= QUAD_MAX) {
+    if (mQuadCount >= RECT_MAX) {
       flushQuad();
     }
 
