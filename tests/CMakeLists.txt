@@ -10,7 +10,7 @@ target_link_libraries(${This} PRIVATE
   ${PROJECT_NAME}
   Catch2::Catch2WithMain
   # Create static builds
-  -static
+  -static-libstdc++
 )
 
 add_test(
