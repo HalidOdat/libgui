@@ -11,7 +11,7 @@
 
 using namespace std::literals;
 
-#include <assets.hpp>
+#include <LibGuiAssets/assets.hpp>
 
 namespace Gui {
 

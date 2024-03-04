@@ -8,7 +8,7 @@
 
 #include "Renderer/Renderer2D.hpp"
 
-#include <assets.hpp>
+#include <LibGuiAssets/assets.hpp>
 
 namespace Gui {
 

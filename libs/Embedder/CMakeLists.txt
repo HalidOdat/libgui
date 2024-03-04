@@ -12,30 +12,54 @@ target_include_directories(${This} PUBLIC include)
 
 
 set(This EmbedderBin)
-add_executable(${This}
-  bin/main.cpp
-)
+add_executable(${This} bin/main.cpp)
+target_link_libraries(${This} -static-libstdc++)
 
-add_custom_command(
-  OUTPUT  ${CMAKE_BINARY_DIR}/assets.hpp ${CMAKE_BINARY_DIR}/assets.cpp
-  COMMAND $<TARGET_FILE:EmbedderBin>
-  ARGS    ${PROJECT_SOURCE_DIR}/assets ${CMAKE_BINARY_DIR}/assets
-  # DEPENDS ${PROJECT_SOURCE_DIR}/assets
-  COMMENT "Generating file using custom command"
-  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-  VERBATIM
-)
+function(EmbedAssets)
+  # Parse function arguments
+  cmake_parse_arguments(
+    ASSET                 # prefix of output variables
+    ""                         # Boolean arguments
+    "NAME;DIRECTORY;NAMESPACE" # Single value arguments
+    ""                         # Multi-value arguments
+    "${ARGN}"
+  )
 
-add_custom_target(custom_target
-  ALL DEPENDS ${CMAKE_BINARY_DIR}/assets.hpp ${CMAKE_BINARY_DIR}/assets.cpp
-  SOURCES ${CMAKE_BINARY_DIR}/assets.hpp ${CMAKE_BINARY_DIR}/assets.cpp
-)
+  # Check if the required arguments are provided
+  if(NOT ASSET_NAME)
+    message(FATAL_ERROR "You must provide a name for the embedded assets")
+  endif()
+  if(NOT ASSET_DIRECTORY)
+    message(FATAL_ERROR "You must provide the asset directory")
+  endif()
 
-add_library(EmbeddedAssets STATIC
-  ${CMAKE_BINARY_DIR}/assets.hpp
-  ${CMAKE_BINARY_DIR}/assets.cpp
-)
+  # Make sure there are no unpaired arguments, if that happens it's probably a bug.
+  foreach(arg IN LISTS ASSET_UNPARSED_ARGUMENTS)
+    message(FATAL_ERROR "${arg} upaired argument, did you forget to add NAME, DIRECTORY, or NAMESPACE prefix?")
+  endforeach()
 
-target_include_directories(EmbeddedAssets PUBLIC ${CMAKE_BINARY_DIR}/)
+  # Define the output locations
+  set(ASSET_OUTPUT_DIR ${CMAKE_BINARY_DIR}/EmbeddedAssets/${ASSET_NAME})
+  set(ASSET_SOURCE ${ASSET_OUTPUT_DIR}/assets.cpp)
+  set(ASSET_HEADER ${ASSET_OUTPUT_DIR}/${ASSET_NAME}/assets.hpp)
 
-target_link_libraries(EmbeddedAssets PUBLIC Embedder)
+  # Make sure the required directories are created
+  file(MAKE_DIRECTORY ${ASSET_OUTPUT_DIR}/${ASSET_NAME})
+
+  add_custom_command(
+    OUTPUT  ${ASSET_HEADER} ${ASSET_SOURCE}  
+    COMMAND $<TARGET_FILE:EmbedderBin>  
+    ARGS    ${ASSET_DIRECTORY} ${ASSET_SOURCE} ${ASSET_HEADER} ${ASSET_NAMESPACE}
+    DEPENDS ${ASSET_DIRECTORY}
+    COMMENT "Generating embedded assets of ${ASSET_DIRECTORY} directory as ${ASSET_NAME} library"
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    VERBATIM
+  )
+
+  add_library(${ASSET_NAME} STATIC
+    ${ASSET_HEADER}
+    ${ASSET_SOURCE}
+  )
+  target_include_directories(${ASSET_NAME} PUBLIC ${ASSET_OUTPUT_DIR})
+  target_link_libraries(${ASSET_NAME} PUBLIC Embedder)
+endfunction()

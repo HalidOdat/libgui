@@ -148,12 +148,18 @@ else()
   message(STATUS "${This}: Building for native")
 endif()
 
+EmbedAssets(
+  NAME LibGuiAssets
+  DIRECTORY assets
+  NAMESPACE Gui
+)
+
 target_link_libraries(${This} PUBLIC
   glfw::glfw
   glm::glm
   stb::stb
   yaml-cpp::yaml-cpp
-  EmbeddedAssets
+  LibGuiAssets
 )
 
 if (NOT DEFINED WEB)

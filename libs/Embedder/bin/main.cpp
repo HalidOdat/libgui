@@ -12,14 +12,14 @@
 using namespace std;
 using namespace std::filesystem;
 
-// TODO: Look into _CRT_SECURE_NO_WARNINGS it warns on windows cl
+// TODO: Look into _CRT_SECURE_NO_WARNINGS, warns on windows cl compiler
 //       builds in the CI.
 
 constexpr size_t ROW_COUNT = 30;
 
 void print_usage() {
   printf(
-    "ResourceEmbedder <input> <output>\n"
+    "ResourceEmbedder <input> <output.cpp> <output.hpp> [namespace]\n"
   );
 }
 
@@ -51,13 +51,17 @@ struct Asset {
 };
 
 int main(int argc, char* argv[]) {
-  if (argc != 3) {
+  if (argc < 4) {
     print_usage();
     return 1;
   }
 
-  auto source = std::string(argv[2]) + ".cpp";
-  FILE* output_file = fopen(source.c_str(), "w+");
+  std::string namespace_;
+  if (argc > 4) {
+    namespace_ = argv[4];
+  }
+
+  FILE* output_file = fopen(argv[2], "w+");
   if (!output_file) {
     perror("Couldn't create output file");
     return 2;
@@ -83,10 +87,7 @@ int main(int argc, char* argv[]) {
 
     // cout << path << " ---> " << name << "\n";
 
-    write_or_die(output_file,
-      "\n"
-      "const static unsigned char "
-    );
+    write_or_die(output_file, "\nconst static unsigned char ");
     write_or_die(output_file, name.c_str());
     write_or_die(output_file, "[] = {");
 
@@ -131,6 +132,12 @@ int main(int argc, char* argv[]) {
     count++;
   }
 
+  if (!namespace_.empty()) {
+    write_or_die(output_file, "\nnamespace ");
+    write_or_die(output_file, namespace_.c_str());
+    write_or_die(output_file, " {\n");
+  }
+
   write_or_die(output_file, "\nGui::RootAsset ");
   std::string temp = root.filename().string();
   write_or_die(output_file, temp.c_str());
@@ -147,10 +154,15 @@ int main(int argc, char* argv[]) {
   }
   write_or_die(output_file, "});\n");
 
+  if (!namespace_.empty()) {
+    write_or_die(output_file, "\n} // namespace ");
+    write_or_die(output_file, namespace_.c_str());
+    write_or_die(output_file, "\n");
+  }
+
   fclose(output_file);
 
-  auto header = std::string(argv[2]) + ".hpp";
-  output_file = fopen(header.c_str(), "w+");
+  output_file = fopen(argv[3], "w+");
   if (!output_file) {
     perror("Couldn't create output file");
     return 2;
@@ -161,10 +173,23 @@ int main(int argc, char* argv[]) {
     "\n"
     "#include <RootAsset.hpp>\n"
     "\n"
-    "extern Gui::RootAsset "
   );
+
+  if (!namespace_.empty()) {
+    write_or_die(output_file, "\nnamespace ");
+    write_or_die(output_file, namespace_.c_str());
+    write_or_die(output_file, " {\n");
+  }
+
+  write_or_die(output_file, "extern Gui::RootAsset ");
   write_or_die(output_file, temp.c_str());
   write_or_die(output_file, ";\n");
+
+  if (!namespace_.empty()) {
+    write_or_die(output_file, "\n} // namespace ");
+    write_or_die(output_file, namespace_.c_str());
+    write_or_die(output_file, "\n");
+  }
 
   fclose(output_file);
 
