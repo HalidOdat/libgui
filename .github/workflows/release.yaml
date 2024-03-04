@@ -1,0 +1,71 @@
+name: Publish Release
+on:
+  release:
+    types: [published]
+
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: true
+
+      matrix:
+        build: [linux, macos, win-msvc]
+        build_type: [Release]
+        include:
+          - build: linux
+            os: ubuntu-latest
+            c_compiler: clang
+            cpp_compiler: clang++
+            asset_name: example-widget-linux-amd64
+            binary_name: examples/Widget/ExampleWidget
+          - build: macos
+            os: macos-latest
+            c_compiler: clang
+            cpp_compiler: clang++
+            asset_name: example-widget-macos-amd64
+            binary_name: examples/Widget/ExampleWidget
+          - build: win-msvc
+            os: windows-latest
+            c_compiler: clang
+            cpp_compiler: clang++
+            asset_name: example-widget-windows-amd64.exe
+            binary_name: examples/Widget/ExampleWidget.exe
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Install ubuntu dependencies
+        if: matrix.os == 'ubuntu-latest'
+        run: sudo apt-get install -y xorg-dev libglu1-mesa-dev
+
+      - name: Install macos dependencies
+        if: matrix.os == 'macos-latest'
+        run: brew install llvm
+
+      - name: Configure CMake
+        run: >
+          cmake -B build
+          -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
+          -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
+          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+          -S ${{ github.workspace }}
+
+      - name: Build
+        run: cmake --build build --config ${{ matrix.build_type }}
+
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v3
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: build/${{ matrix.binary_name }}
+          asset_name: ${{ matrix.asset_name }}
+          override: true
+          tag: ${{ github.ref }}
