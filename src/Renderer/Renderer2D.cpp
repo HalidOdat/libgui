@@ -8,6 +8,8 @@
 
 #include "Renderer/Renderer2D.hpp"
 
+#include <LibGuiAssets/assets.hpp>
+
 namespace Gui {
 
   Renderer2D::Renderer2D(u32 width, u32 height)
@@ -47,7 +49,7 @@ namespace Gui {
     mQuadVertexArray->setIndexBuffer(mQuadIndexBuffer);
     mQuadVertexArray->unbind();
 
-    mQuadShader = Shader::load("assets/shaders/Quad.glsl").build();
+    mQuadShader = Shader::load(assets.get("assets/shaders/Quad.glsl")).build();
     mQuadShader->bind();
     mQuadShader->setVec2("uResolution", Vec2{mWidth, mHeight});
 
@@ -82,11 +84,11 @@ namespace Gui {
       mCircleBasePtr = new CircleVertex[CIRCLE_MAX * CIRCLE_VERTICES_COUNT];
       mCircleCurrentPtr = mCircleBasePtr;
       mCircleCount = 0;
-      
-      mCircleShader = Shader::load("assets/shaders/Circle.glsl").build();
+
+      mCircleShader = Shader::load(assets.get("assets/shaders/Circle.glsl")).build();
     }
 
-    auto fontTexture = Texture::load("assets/textures/PixelFont_7x9_112x54.png")
+    auto fontTexture = Texture::load(assets.get("assets/textures/PixelFont_7x9_112x54.png"))
       .filtering(Texture::FilteringMode::Nearest)
       .mipmap(Texture::MipmapMode::None)
       .build();
@@ -137,7 +139,7 @@ namespace Gui {
         drawChar(c, current, size, color, effect);
         current.x += size.x;
       } else {
-        current.y += size.y; 
+        current.y += size.y;
         current.x  = start.x;
       }
     }
@@ -150,16 +152,16 @@ namespace Gui {
   void Renderer2D::drawCenteredQuad(const Vec2& position, const Vec2& size, const SubTexture& texture, const Vec4& color, Effect effect) {
     drawQuad(position - size / 2.0f, size, texture, color, effect);
   }
-  
+
   void Renderer2D::drawQuad(const Vec2& position, const Vec2& size, const Vec4& color, Effect effect) {
     Renderer2D::drawQuad(position, size, mWhiteTexture, color, effect);
   }
 
   void Renderer2D::drawQuad(const Vec2& position, const Vec2& size, const SubTexture& texture, const Vec4& color, Effect effect) {
     Mat4 transform = Mat4(1.0f);
-    transform = glm::translate(transform, glm::vec3(position, 0.0f));  
+    transform = glm::translate(transform, glm::vec3(position, 0.0f));
 
-    transform = glm::scale(transform, glm::vec3(size, 1.0f)); 
+    transform = glm::scale(transform, glm::vec3(size, 1.0f));
 
     if (mQuadCount >= RECT_MAX) {
       flushQuad();
@@ -293,7 +295,7 @@ namespace Gui {
     mBlending = yes;
     if (mBlending) {
       glEnable(GL_BLEND);
-      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  
+      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     } else {
       glDisable(GL_BLEND);
     }

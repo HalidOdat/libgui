@@ -147,7 +147,7 @@ namespace Gui {
   }
   Texture::Builder& Texture::Builder::wrapping(Texture::WrappingMode mode) {
     mSpecification.wrapping = mode;
-    return *this; 
+    return *this;
   }
   Texture::Builder& Texture::Builder::filtering(Texture::Filtering filtering) {
     mSpecification.filtering = filtering;
@@ -167,10 +167,9 @@ namespace Gui {
   }
   Texture::Builder& Texture::Builder::samples(u32 inSamples) {
     mSpecification.samples = inSamples;
-    return *this; 
+    return *this;
   }
   Texture::Handle Texture::Builder::build() {
-    String filepath = String(mFile);
     switch (mType) {
       case Texture::Type::Color:
         if (cachedColorTexture.find(mColor) != cachedColorTexture.end()) {
@@ -184,8 +183,8 @@ namespace Gui {
         }
         break;
       case Texture::Type::Image:
-        if (cachedImageTexture.find(filepath) != cachedImageTexture.end()) {
-          return cachedImageTexture.at(filepath);
+        if (cachedImageTexture.find(mAsset->filepath()) != cachedImageTexture.end()) {
+          return cachedImageTexture.at(mAsset->filepath());
         }
         break;
       default:
@@ -197,13 +196,13 @@ namespace Gui {
     if (mType == Texture::Type::Image) {
       stbi_set_flip_vertically_on_load(mSpecification.verticalFlip);
 
-      int width, height, channels;
-      stbi_uc* bytes = stbi_load(filepath.c_str(), &width, &height, &channels, 0);
-
-      if (!bytes) {
-        Logger::error("Couldn't load image file '%s'", filepath.c_str());
+      if (!mAsset->load()) {
+        Logger::error("Couldn't load image file '%s'", mAsset->filepath().c_str());
         return {};
       }
+
+      int width, height, channels;
+      stbi_uc* bytes = stbi_load_from_memory(mAsset->data(), mAsset->size(), &width, &height, &channels, 0);
 
       mWidth  = width;
       mHeight = height;
@@ -284,20 +283,21 @@ namespace Gui {
       glGenerateMipmap(target);
     }
 
-    if (mType == Texture::Type::Image) {
-      stbi_image_free((stbi_uc*)mData);
-    }
+    // TODO: Maybe unload image
+    // if (mType == Texture::Type::Image) {
+    //   stbi_image_free((stbi_uc*)mData);
+    // }
 
-    auto data = Data{texture, mWidth, mHeight, mSpecification, mType, filepath, mColor};
+    auto data = Data{texture, mWidth, mHeight, mSpecification, mType, mAsset, mColor};
     auto handle = std::make_shared<Texture>(std::move(data));
     switch (mType) {
       case Texture::Type::Color:
-        Logger::trace("Texture #%u loaded from file: %s", handle->getId(), handle->getFilePath()->c_str());
+        Logger::trace("Texture #%u created color: #%08X", handle->getId(), handle->getColor());
         cachedColorTexture.emplace(mColor, handle);
         break;
       case Texture::Type::Image:
-        Logger::trace("Texture #%u created color: #%08X", handle->getId(), handle->getColor());
-        cachedImageTexture.emplace(std::move(filepath), handle);
+        Logger::trace("Texture #%u loaded from file: %s", handle->getId(), handle->getFilePath()->c_str());
+        cachedImageTexture.emplace(*handle->getFilePath(), handle);
         break;
       case Texture::Type::Buffer:
         Logger::trace("Texture #%u created buffer: width=%u, height=%u", handle->getId(), handle->getWidth(), handle->getHeight());
@@ -390,10 +390,10 @@ namespace Gui {
     builder.mDataType = dataType;
     return builder;
   }
-  Texture::Builder Texture::load(const String& path, bool verticalFlipOnLoad) {
+  Texture::Builder Texture::load(const Asset::Handle asset, bool verticalFlipOnLoad) {
     Builder builder;
     builder.mType = Texture::Type::Image;
-    builder.mFile = path;
+    builder.mAsset = asset;
     builder.mSpecification.verticalFlip = verticalFlipOnLoad;
     return builder;
   }
@@ -409,22 +409,23 @@ namespace Gui {
     }
 
     stbi_set_flip_vertically_on_load(mData.specification.verticalFlip);
-    int width, height, channels;
-    auto file = *mData.filePath;
-    u8* bytes = stbi_load(mData.filePath->c_str(), &width, &height, &channels, 0);
-
-    if (!bytes) {
-      Logger::error("Couldn't reload image file '%s'", mData.filePath->c_str());
-      return false;
-    }
-
-    auto data = Texture::fromBytes(bytes, width, height, channels, mData.specification);
-    stbi_image_free(bytes);
-
-    Logger::trace("Reloaded texture: %s", mData.filePath.value().c_str());
-    glDeleteTextures(1, &mData.id);
-    data.filePath = std::move(mData.filePath);
-    mData = std::move(data);
+    // int width, height, channels;
+    // auto file = *mData.filePath;
+    // u8* bytes = stbi_load(mData.filePath->c_str(), &width, &height, &channels, 0);
+    //
+    // if (!bytes) {
+    //   Logger::error("Couldn't reload image file '%s'", mData.filePath->c_str());
+    //   return false;
+    // }
+    //
+    // auto data = Texture::fromBytes(bytes, width, height, channels, mData.specification);
+    // stbi_image_free(bytes);
+    //
+    // Logger::trace("Reloaded texture: %s", mData.filePath.value().c_str());
+    // glDeleteTextures(1, &mData.id);
+    // data.filePath = std::move(mData.filePath);
+    // mData = std::move(data);
+    GUI_TODO("Implement reloading");
     return true;
   }
   Texture::~Texture() {

@@ -3,6 +3,8 @@
 #include "Core/Base.hpp"
 #include <unordered_map>
 
+#include <Asset.hpp>
+
 namespace Gui {
 
   class Shader {
@@ -33,7 +35,7 @@ namespace Gui {
       Builder() = default;
 
     private:
-      StringView mFilePath;
+      Asset::Handle mAsset;
       #ifdef GUI_PLATFORM_WEB
         Version mVersion = Version::Es300;
       #else
@@ -48,7 +50,7 @@ namespace Gui {
   public:
     static bool globalDefine(String name, String content);
 
-    static Shader::Builder load(const StringView& filepath);
+    static Shader::Builder load(const Asset::Handle asset);
     DISALLOW_MOVE_AND_COPY(Shader);
     ~Shader();
 
@@ -73,8 +75,8 @@ namespace Gui {
     // DO NOT USE! Use the shader builder.
     //
     // NOTE: Has to be public to be constructed with std::make_shared
-    Shader(u32 id, Option<String> filePath = None)
-      : id{id}, mFilePath{std::move(filePath)}
+    Shader(u32 id, Asset::Handle asset)
+      : id{id}, mAsset{std::move(asset)}
     {}
 
   private:
@@ -90,7 +92,7 @@ namespace Gui {
 
   private:
     u32 id;
-    Option<String> mFilePath;
+    Asset::Handle mAsset;
     std::unordered_map<StringView, i32> mUniformLocations;
 
   private:

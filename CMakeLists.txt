@@ -26,6 +26,7 @@ endif()
 set(GUI_BUILD_TESTS ${GUI_MAIN_PROJECT})
 
 add_subdirectory(external)
+add_subdirectory(libs)
 
 set(ASSETS_DIRECTOY "${PROJECT_SOURCE_DIR}/assets")
 message(STATUS "${This}: Assets directory path: ${ASSETS_DIRECTOY}")
@@ -39,8 +40,6 @@ add_library(${This} STATIC
   src/Core/OpenGL.hpp
   src/Core/Base.hpp
 
-  src/Utils/File.hpp
-  src/Utils/File.cpp
   src/Utils/String.hpp
   src/Utils/String.cpp
 
@@ -100,6 +99,7 @@ else()
       # $<$<AND:$<CONFIG:Debug>,$<WEB:>>:-Og>
       $<$<CONFIG:Release>:-Os>
       $<$<CONFIG:MinSizeRel>:-Oz>
+      -ggdb
   )
   target_link_options(${This}
     PRIVATE
@@ -148,11 +148,18 @@ else()
   message(STATUS "${This}: Building for native")
 endif()
 
+EmbedAssets(
+  NAME LibGuiAssets
+  DIRECTORY assets
+  NAMESPACE Gui
+)
+
 target_link_libraries(${This} PUBLIC
   glfw::glfw
   glm::glm
   stb::stb
   yaml-cpp::yaml-cpp
+  LibGuiAssets
 )
 
 if (NOT DEFINED WEB)
