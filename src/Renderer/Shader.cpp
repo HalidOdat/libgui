@@ -117,7 +117,8 @@ namespace Gui {
         if (file.empty()) {
           break;
         }
-        file.remove_prefix(std::min(file.find_first_not_of("\n"), file.size()));
+        auto lineEnd = file.find_first_not_of("\n");
+        file.remove_prefix(lineEnd < file.size() ? lineEnd : file.size());
         line = file;
         file = ""sv;
       } else {

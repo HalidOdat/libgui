@@ -12,6 +12,9 @@
 using namespace std;
 using namespace std::filesystem;
 
+// TODO: Look into _CRT_SECURE_NO_WARNINGS it warns on windows cl
+//       builds in the CI.
+
 constexpr size_t ROW_COUNT = 30;
 
 void print_usage() {
@@ -41,6 +44,12 @@ std::string get_name(size_t index, std::string str) {
   return "asset_" + std::to_string(index) + "__" + str;
 }
 
+struct Asset {
+  std::string path;
+  std::string name;
+  size_t count;
+};
+
 int main(int argc, char* argv[]) {
   if (argc != 3) {
     print_usage();
@@ -58,7 +67,7 @@ int main(int argc, char* argv[]) {
 
   auto root = std::filesystem::canonical(argv[1]);
 
-  std::vector<std::tuple<std::string, std::string, size_t>> assets;
+  std::vector<Asset> assets;
 
   // TODO: Handle single files
   size_t count = 0;
@@ -70,7 +79,7 @@ int main(int argc, char* argv[]) {
 
     auto path          = std::filesystem::canonical(i->path());
     auto relative_path = std::filesystem::relative(path, root.parent_path());
-    auto name          = get_name(count, relative_path.c_str());
+    auto name          = get_name(count, relative_path.string());
 
     // cout << path << " ---> " << name << "\n";
 
@@ -81,7 +90,8 @@ int main(int argc, char* argv[]) {
     write_or_die(output_file, name.c_str());
     write_or_die(output_file, "[] = {");
 
-    FILE* input_file = fopen(path.c_str(), "rb");
+    std::string temp = path.string();
+    FILE* input_file = fopen(temp.c_str(), "rb");
     if (!input_file) {
       perror("Couldn't open input file");
       return 2;
@@ -112,13 +122,18 @@ int main(int argc, char* argv[]) {
       "\n};\n"
     );
   
-    assets.push_back(std::make_tuple(relative_path, name, sum));
+    assets.push_back(Asset{
+      relative_path.string(),
+      name,
+      sum
+    });
 
     count++;
   }
 
   write_or_die(output_file, "\nGui::RootAsset ");
-  write_or_die(output_file, root.filename().c_str());
+  std::string temp = root.filename().string();
+  write_or_die(output_file, temp.c_str());
   write_or_die(output_file, "({\n");
   for (auto&[path, name, sum] : assets) {
     write_or_die(output_file, "  {R\"#10#(");
@@ -148,7 +163,7 @@ int main(int argc, char* argv[]) {
     "\n"
     "extern Gui::RootAsset "
   );
-  write_or_die(output_file, root.filename().c_str());
+  write_or_die(output_file, temp.c_str());
   write_or_die(output_file, ";\n");
 
   fclose(output_file);
