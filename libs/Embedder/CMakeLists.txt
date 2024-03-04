@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.5)
 
+add_subdirectory(bin)
+
 set(This Embedder)
 add_library(${This} STATIC
   include/Asset.hpp
@@ -9,11 +11,6 @@ add_library(${This} STATIC
   src/RootAsset.cpp
 )
 target_include_directories(${This} PUBLIC include)
-
-
-set(This EmbedderBin)
-add_executable(${This} bin/main.cpp)
-target_link_libraries(${This} -static-libstdc++)
 
 function(EmbedAssets)
   # Parse function arguments

@@ -38,12 +38,12 @@ if(CMAKE_SOURCE_DIR STREQUAL PROJECT_SOURCE_DIR)
 endif()
 
 set(GUI_BUILD_TESTS ${GUI_MAIN_PROJECT})
+if(WEB)
+  set(GUI_BUILD_TESTS OFF)
+endif()
 
 add_subdirectory(external)
 add_subdirectory(libs)
-
-set(ASSETS_DIRECTOY "${PROJECT_SOURCE_DIR}/assets")
-message(STATUS "${This}: Assets directory path: ${ASSETS_DIRECTOY}")
 
 add_library(${This} STATIC
   src/Core/Type.hpp
@@ -148,7 +148,6 @@ if (DEFINED WEB)
       # $<$<OR:$<CONFIG:Release>,$<CONFIG:MinSizeRel>>:--closure=1>
       $<$<OR:$<CONFIG:Release>,$<CONFIG:MinSizeRel>>:-sLZ4>
       $<$<CONFIG:MinSizeRel>:-flto=full>
-      --preload-file "${ASSETS_DIRECTOY}@assets"
   )
 else()
   message(STATUS "${This}: Building for native")
