@@ -4,13 +4,13 @@
 
 namespace Gui {
 
-class SizedBoxWidget : public Widget {
+class SizedBox : public Widget {
 public:
-  using Handle = std::shared_ptr<SizedBoxWidget>;
+  using Handle = std::shared_ptr<SizedBox>;
 
 public:
-  static SizedBoxWidget::Handle create(float width = 0.0, float height = 0.0);
-  static SizedBoxWidget::Handle create(Vec2 size);
+  static SizedBox::Handle create(float width = 0.0, float height = 0.0);
+  static SizedBox::Handle create(Vec2 size);
 
   void setColor(Vec4 color) { mColor = color; }
 
@@ -18,10 +18,10 @@ public:
   void draw(Renderer2D& renderer) override;
 
 public: // Do NOT use these function use the create functions!
-  SizedBoxWidget(float width = 0.0, float height = 0.0)
+  SizedBox(float width = 0.0, float height = 0.0)
     : Widget({width, height})
   {}
-  SizedBoxWidget(Vec2 size)
+  SizedBox(Vec2 size)
     : Widget(size)
   {}
 

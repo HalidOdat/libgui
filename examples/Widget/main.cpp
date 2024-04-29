@@ -31,10 +31,10 @@ int main() {
       }
     );
 
-    auto container = Gui::ContainerWidget::create();
-    auto child1 = Gui::SizedBoxWidget::create(100, 100);
+    auto container = Gui::Container::create();
+    auto child1 = Gui::SizedBox::create(100, 100);
     child1->setColor(Gui::Color::RED);
-    auto child2 = Gui::SizedBoxWidget::create(100, 100);
+    auto child2 = Gui::SizedBox::create(100, 100);
     child2->setColor(Gui::Color::BLUE);
     container->addChild(child1);
     container->addChild(child2);

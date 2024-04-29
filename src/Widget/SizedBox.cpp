@@ -3,20 +3,20 @@
 
 namespace Gui {
 
-SizedBoxWidget::Handle SizedBoxWidget::create(float width, float height) {
-  return std::make_shared<SizedBoxWidget>(width, height);
+SizedBox::Handle SizedBox::create(float width, float height) {
+  return std::make_shared<SizedBox>(width, height);
 }
-SizedBoxWidget::Handle SizedBoxWidget::create(Vec2 size) {
-  return std::make_shared<SizedBoxWidget>(size);
+SizedBox::Handle SizedBox::create(Vec2 size) {
+  return std::make_shared<SizedBox>(size);
 }
 
-Vec2 SizedBoxWidget::layout(const Constraints& constraints) {
+Vec2 SizedBox::layout(const Constraints& constraints) {
   mSize.x = std::max(constraints.minWidth, std::min(constraints.maxWidth, mSize.x));
   mSize.y = std::max(constraints.minHeight, std::min(constraints.maxHeight, mSize.y));
   return mSize;
 }
 
-void SizedBoxWidget::draw(Renderer2D& renderer) {
+void SizedBox::draw(Renderer2D& renderer) {
   renderer.drawQuad(mPosition, mSize, mColor);
 }
 

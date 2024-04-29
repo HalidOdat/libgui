@@ -5,13 +5,13 @@
 
 namespace Gui {
 
-class ContainerWidget : public Widget {
+class Container : public Widget {
 public:
-  using Handle = std::shared_ptr<ContainerWidget>;
+  using Handle = std::shared_ptr<Container>;
 
 public:
-  static ContainerWidget::Handle create(float width = 0.0, float height = 0.0);
-  static ContainerWidget::Handle create(Vec2 size);
+  static Container::Handle create(float width = 0.0, float height = 0.0);
+  static Container::Handle create(Vec2 size);
 
   void addChild(Widget::Handle child);
   void setColor(Vec4 color) { mColor = color; }
@@ -22,10 +22,10 @@ public:
   void draw(Renderer2D& renderer) override;
 
 public: // Do NOT use these function use the create functions!
-  ContainerWidget(float width = 0.0, float height = 0.0)
+  Container(float width = 0.0, float height = 0.0)
     : Widget({width, height})
   {}
-  ContainerWidget(Vec2 size)
+  Container(Vec2 size)
     : Widget(size)
   {}
 
