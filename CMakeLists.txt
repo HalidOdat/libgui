@@ -81,8 +81,8 @@ add_library(${This} STATIC
   src/Widget/Clickable.cpp
   src/Widget/Clickable.hpp
 
-  src/Window.hpp
-  src/Window.cpp
+  src/Gui.hpp
+  src/Gui.cpp
 )
 
 target_include_directories(${This} PUBLIC src)

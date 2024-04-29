@@ -6,7 +6,7 @@
 #include "Events/MouseEvent.hpp"
 #include "Events/WindowEvent.hpp"
 #include "Events/FileDropEvent.hpp"
-#include "Window.hpp"
+#include "Gui.hpp"
 
 namespace Gui {
 
@@ -308,6 +308,51 @@ namespace Gui {
       glfwSetInputMode(this->data.window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
     } else {
       glfwSetInputMode(this->data.window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    }
+  }
+
+  Application::Application(std::string title, u32 widget, u32 height)
+    : mWidth{widget},
+      mHeight{height},
+      mWindow(Window::create(title.c_str(), widget, height)),
+      mCamera(mWidth, mHeight, mWindow->getAspectRatio()),
+      renderer(mWidth, mHeight)
+  {
+    mCamera.resize(mWidth, mHeight);
+
+    mWindow->setVSync(true);
+  }
+
+  void Application::run() {
+    mWindow->setEventCallback(
+      [&](const Gui::Event& event) {
+        if (event.getType() == Gui::Event::Type::WindowResize) {
+            auto resize = (Gui::WindowResizeEvent&)(event);
+            mWidth = resize.getWidth();
+            mHeight = resize.getHeight();
+            glViewport(0, 0, mWidth, mHeight);
+            printf("width = %d, height = %d\n", mWidth, mHeight);
+            mCamera.resize(mWidth, mHeight);
+            renderer.invalidate(mWidth, mHeight);
+        }
+      }
+    );
+
+    float lastFrameTime = (float)glfwGetTime();
+    while (!mWindow->shouldClose()) {
+        mTime = (float)glfwGetTime();
+        dt = mTime - lastFrameTime;
+        lastFrameTime = mTime;
+
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        renderer.begin(mCamera.getCamera());
+        renderer.clearScreen();
+        
+        // container->draw(renderer);
+        onUpdate();
+
+        renderer.end();
+        mWindow->update();
     }
   }
 }

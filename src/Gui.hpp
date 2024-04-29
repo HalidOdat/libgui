@@ -4,6 +4,11 @@
 
 #include "Core/Type.hpp"
 #include "Events/KeyEvent.hpp"
+#include <Renderer/CameraController.hpp>
+#include <Renderer/Renderer2D.hpp>
+
+#include <Widget/Container.hpp>
+#include <Widget/SizedBox.hpp>
 
 // Forward declare
 struct GLFWwindow;
@@ -57,6 +62,31 @@ namespace Gui {
 
   private:
     Data data;
+  };
+
+  class Application {
+  public:
+    Application(std::string title, u32 widget, u32 height);
+    virtual ~Application() {}
+
+    void run();
+    u32 getWidth() { return mWidth; }
+    u32 getHeight() { return mHeight; }
+    float getTime() { return mTime; }
+
+    virtual void onUpdate() {}
+
+  private:
+    u32 mWidth  = 620;
+    u32 mHeight = 480;
+    float mTime;
+
+    Window::Handle mWindow = nullptr;
+    OrthographicCameraController mCamera;
+
+  protected:
+    Renderer2D renderer;
+    float dt;
   };
 
 } // namespace Gui
