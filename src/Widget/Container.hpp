@@ -5,35 +5,47 @@
 
 namespace Gui {
 
+enum class Alignment {
+  None,
+  Center,
+};
+
 class Container : public Widget {
 public:
   using Handle = std::shared_ptr<Container>;
 
 public:
-  static Container::Handle create(float width = 0.0, float height = 0.0);
-  static Container::Handle create(Vec2 size);
+  static Container::Handle create(Vec2 size = {0.0f, 0.0f});
 
   void addChild(Widget::Handle child);
   void setColor(Vec4 color) { mColor = color; }
+  void clearChildren() { mChildren.clear(); }
   void setPadding(Vec4 padding) { mPadding = padding; }
+  void setAlignment(Alignment alignment) { mAlignment = alignment; }
 
-  Vec2 layout(const Constraints& constraints) override;
+  Vec2 layout(Constraints constraints) override;
   void reportSize() const override;
   void draw(Renderer2D& renderer) override;
+  bool visit(Widget::Visitor& visitor) override {
+    for (auto child : mChildren) {
+      if (!child->visit(visitor)) {
+        return false;
+      }
+    }
+    return visitor(this);
+  }
 
 public: // Do NOT use these function use the create functions!
-  Container(float width = 0.0, float height = 0.0)
-    : Widget({width, height})
-  {}
   Container(Vec2 size)
     : Widget(size)
   {}
 
-private:
+protected:
   std::vector<Widget::Handle> mChildren;
   Vec4 mColor;
 
   Vec4 mPadding{};
+  Alignment mAlignment{Alignment::None};
 };
 
 } // namespace Gui

@@ -73,6 +73,11 @@ add_library(${This} STATIC
 
   src/Widget/Constraints.hpp
   src/Widget/Container.cpp
+  src/Widget/Container.hpp
+  src/Widget/Row.cpp
+  src/Widget/Row.hpp
+  src/Widget/Column.cpp
+  src/Widget/Column.hpp
   src/Widget/Widget.cpp
   src/Widget/Widget.hpp
   src/Widget/Container.hpp
@@ -97,7 +102,6 @@ else()
     PRIVATE
       -Wall -Wextra -pedantic               # Enable very useful warnings
       -fno-exceptions                       # Disable exceptions
-      -fno-rtti                             # Disable runtime type information (dynamic_cast)
       # $<$<AND:$<CONFIG:Debug>,$<WEB:>>:-Og>
       $<$<CONFIG:Release>:-Os>
       $<$<CONFIG:MinSizeRel>:-Oz>

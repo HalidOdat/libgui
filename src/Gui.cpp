@@ -318,25 +318,57 @@ namespace Gui {
       mCamera(mWidth, mHeight, mWindow->getAspectRatio()),
       renderer(mWidth, mHeight)
   {
+    mWindow->setVSync(true);
     mCamera.resize(mWidth, mHeight);
 
-    mWindow->setVSync(true);
+    root = Container::create();
   }
 
   void Application::run() {
-    mWindow->setEventCallback(
-      [&](const Gui::Event& event) {
-        if (event.getType() == Gui::Event::Type::WindowResize) {
-            auto resize = (Gui::WindowResizeEvent&)(event);
-            mWidth = resize.getWidth();
-            mHeight = resize.getHeight();
-            glViewport(0, 0, mWidth, mHeight);
-            printf("width = %d, height = %d\n", mWidth, mHeight);
-            mCamera.resize(mWidth, mHeight);
-            renderer.invalidate(mWidth, mHeight);
-        }
+    mWindow->setEventCallback([&](const Gui::Event& event) {
+      if (event.getType() == Gui::Event::Type::WindowResize) {
+        auto resize = (Gui::WindowResizeEvent&)(event);
+        mWidth = resize.getWidth();
+        mHeight = resize.getHeight();
+        glViewport(0, 0, mWidth, mHeight);
+        printf("width = %d, height = %d\n", mWidth, mHeight);
+        mCamera.resize(mWidth, mHeight);
+        renderer.invalidate(mWidth, mHeight);
+      } else if (event.getType() == Gui::Event::Type::MouseMove) {
+        auto[x, y] = ((MouseMoveEvent&)event).getPosition();
+        mMousePosition = {(float)x, (float)y};
+      } else if (event.getType() == Gui::Event::Type::MouseButtonPressed) {
+        auto button = ((MouseButtonEvent&)event).getButton();
+        auto x = mMousePosition.x;
+        auto y = mMousePosition.y;
+
+        Widget::Handle target = nullptr;
+        Widget::Visitor visitor = [&](Widget* current) {
+          if (
+            current->mPosition.x <= x
+            && current->mPosition.y <= y
+            && current->mPosition.x + current->mSize.x > x
+            && current->mPosition.y + current->mSize.y > y
+          ) {
+            if (auto widget = dynamic_cast<Clickable*>(current)) {
+              Logger::trace("Clicked --> %p", (void*)current);
+
+              Clickable::Event event = {
+                widget,
+                widget->getChild(),
+                mMousePosition,
+                button,
+              };
+              return widget->call(event);
+            }
+          }
+
+          return true;
+        };
+
+        root->visit(visitor);
       }
-    );
+    });
 
     float lastFrameTime = (float)glfwGetTime();
     while (!mWindow->shouldClose()) {
@@ -347,8 +379,10 @@ namespace Gui {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         renderer.begin(mCamera.getCamera());
         renderer.clearScreen();
-        
-        // container->draw(renderer);
+
+        root->layout({0, 0, (float)mWidth, (float)mHeight});
+        root->draw(renderer);
+
         onUpdate();
 
         renderer.end();

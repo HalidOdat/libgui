@@ -8,7 +8,10 @@
 #include <Renderer/Renderer2D.hpp>
 
 #include <Widget/Container.hpp>
+#include <Widget/Row.hpp>
+#include <Widget/Column.hpp>
 #include <Widget/SizedBox.hpp>
+#include <Widget/Clickable.hpp>
 
 // Forward declare
 struct GLFWwindow;
@@ -73,6 +76,7 @@ namespace Gui {
     u32 getWidth() { return mWidth; }
     u32 getHeight() { return mHeight; }
     float getTime() { return mTime; }
+    Vec2 getMousePosition() { return mMousePosition; }
 
     virtual void onUpdate() {}
 
@@ -87,6 +91,10 @@ namespace Gui {
   protected:
     Renderer2D renderer;
     float dt;
+
+    Vec2 mMousePosition;
+
+    Widget::Handle root;
   };
 
 } // namespace Gui

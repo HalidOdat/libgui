@@ -14,8 +14,9 @@ public:
 
   void setColor(Vec4 color) { mColor = color; }
 
-  Vec2 layout(const Constraints& constraints) override;
+  Vec2 layout(Constraints constraints) override;
   void draw(Renderer2D& renderer) override;
+  bool visit(Widget::Visitor& visitor) override { return visitor(this); }
 
 public: // Do NOT use these function use the create functions!
   SizedBox(float width = 0.0, float height = 0.0)

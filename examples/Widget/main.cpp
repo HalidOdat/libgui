@@ -1,31 +1,71 @@
 #include <Gui.hpp>
 
-class MyApplication : public Gui::Application {
+using namespace Gui;
+
+// Define some complement colors
+static constexpr auto COLOR1 = rgba(0x00688BFF);
+static constexpr auto COLOR2 = rgba(0x03A89EFF);
+static constexpr auto COLOR3 = rgba(0xCD3700FF);
+static constexpr auto COLOR4 = rgba(0xFF6103FF);
+
+/// Specify the padding for each row/column widget.
+static constexpr Vec4 PADDING = {2.5, 2.5, 2.5, 2.5};
+
+bool callback(Clickable::Event event) {
+  auto container = (Container*)event.target.get();
+
+  if (event.button == MouseButton::_1) {
+    if (container->as<Column>()) {
+      auto child1 = Row::create();
+      child1->setAlignment(Alignment::Center);
+      child1->setColor(COLOR1);
+      child1->setPadding(PADDING);
+
+      auto child2 = Row::create();
+      child2->setAlignment(Alignment::Center);
+      child2->setColor(COLOR3);
+      child2->setPadding(PADDING);
+
+      container->addChild(Clickable::create(child1, callback));
+      container->addChild(Clickable::create(child2, callback));
+    } else {
+      auto child1 = Column::create();
+      child1->setAlignment(Alignment::Center);
+      child1->setColor(COLOR2);
+      child1->setPadding(PADDING);
+
+      auto child2 = Column::create();
+      child2->setAlignment(Alignment::Center);
+      child2->setColor(COLOR4);
+      child2->setPadding(PADDING);
+
+      container->addChild(Clickable::create(child1, callback));
+      container->addChild(Clickable::create(child2, callback));
+    }
+    return false;
+  } else if (event.button == MouseButton::_2) {
+    if (auto container = event.parent->parent->as<Container>()) {
+      container->clearChildren();
+    }
+    return false;
+  }
+
+  // Propagate the event
+  return true;
+}
+
+class MyApplication : public Application {
 public:
   MyApplication() : Application("Hello There", 800, 800)
   {
-    mContainer = Gui::Container::create();
-    auto child1 = Gui::SizedBox::create(100, 100);
-    child1->setColor(Gui::Color::RED);
-    auto child2 = Gui::SizedBox::create(100, 100);
-    child2->setColor(Gui::Color::BLUE);
-    mContainer->addChild(child1);
-    mContainer->addChild(child2);
+    auto clickableRoot = Column::create();
+    clickableRoot->setAlignment(Alignment::Center);
+    clickableRoot->setColor(Color::WHITE);
+    clickableRoot->setPadding(PADDING);
 
-    mContainer->setPosition({200, 200});
-    mContainer->setPadding({20, 20, 20, 20});
-
-    mContainer->layout({0, 0, 1000, 1000});
-    mContainer->setColor(Gui::Color::GREEN);
-    mContainer->reportSize();
+    // Override default root.
+    root = Clickable::create(clickableRoot, callback);
   }
-
-  void onUpdate() override {
-    mContainer->draw(renderer);
-  }
-
-private:
-  Gui::Container::Handle mContainer;
 };
 
 int main() {

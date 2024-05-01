@@ -10,7 +10,7 @@ SizedBox::Handle SizedBox::create(Vec2 size) {
   return std::make_shared<SizedBox>(size);
 }
 
-Vec2 SizedBox::layout(const Constraints& constraints) {
+Vec2 SizedBox::layout(Constraints constraints) {
   mSize.x = std::max(constraints.minWidth, std::min(constraints.maxWidth, mSize.x));
   mSize.y = std::max(constraints.minHeight, std::min(constraints.maxHeight, mSize.y));
   return mSize;
