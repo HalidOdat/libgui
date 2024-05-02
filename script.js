@@ -6,13 +6,15 @@ var canvas = document.getElementById('canvas');
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  window.Module._gui_resizeWindow(window.innerWidth, window.innerHeight);
+}
+
 var Module = {
   preRun: [],
-  postRun: [
-    () => {
-      window.Module._gui_resizeWindow(window.innerWidth, window.innerHeight);
-    }
-  ],
+  postRun: [resizeCanvas],
   print: (function () {
     return function (text) {
       if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
@@ -20,11 +22,8 @@ var Module = {
     };
   })(),
   canvas: (function () {
-    window.addEventListener("resize", function (e) {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      window.Module._gui_resizeWindow(window.innerWidth, window.innerHeight);
-    })
+    window.addEventListener("resize", resizeCanvas);
+
     // As a default initial behavior, pop up an alert when webgl context is lost. To make your
     // application robust, you may want to override this behavior before shipping!
     // See http://www.khronos.org/registry/webgl/specs/latest/1.0/#5.15.2
