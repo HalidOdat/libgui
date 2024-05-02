@@ -6,7 +6,7 @@ project(${This}
   VERSION 0.1.0
   LANGUAGES CXX C
   DESCRIPTION "A GUI library written in C++"
-  # HOMEPAGE_URL "https://github.com/HalidOdat/"
+  HOMEPAGE_URL "https://github.com/HalidOdat/libgui"
 )
 
 set(CMAKE_C_STANDARD 99)

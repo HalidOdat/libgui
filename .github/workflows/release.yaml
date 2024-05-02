@@ -21,22 +21,16 @@ jobs:
         include:
           - build: linux
             os: ubuntu-latest
-            c_compiler: clang
-            cpp_compiler: clang++
             asset_name: example-widget-linux-amd64
             binary_name: examples/Widget/ExampleWidget
           - build: macos
             os: macos-latest
-            c_compiler: clang
-            cpp_compiler: clang++
             asset_name: example-widget-macos-amd64
             binary_name: examples/Widget/ExampleWidget
           - build: win-msvc
             os: windows-latest
-            c_compiler: clang
-            cpp_compiler: clang++
             asset_name: example-widget-windows-amd64.exe
-            binary_name: examples/Widget/ExampleWidget.exe
+            binary_name: examples/Widget/Release/ExampleWidget.exe
 
     steps:
       - name: Checkout Repository
@@ -53,8 +47,8 @@ jobs:
       - name: Configure CMake
         run: >
           cmake -B build
-          -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
-          -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
+          -DCMAKE_CXX_COMPILER=clang++
+          -DCMAKE_C_COMPILER=clang
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
 
       - name: Build
