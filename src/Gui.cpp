@@ -8,6 +8,28 @@
 #include "Events/FileDropEvent.hpp"
 #include "Gui.hpp"
 
+#ifdef GUI_PLATFORM_WEB
+#  include <emscripten/emscripten.h>
+#  if defined(__cplusplus)
+#    define EM_PORT_API(rettype) extern "C" rettype EMSCRIPTEN_KEEPALIVE
+#  else
+#    define EM_PORT_API(rettype) rettype EMSCRIPTEN_KEEPALIVE
+#  endif
+#endif
+
+#ifdef GUI_PLATFORM_WEB
+  static Gui::Application* application = nullptr;
+  void emscriptenLogicLoop() {
+    application->logicLoop();
+  }
+
+  EM_PORT_API(void) gui_resizeWindow(int width, int height) {
+    if (application) {
+      application->resize(width, height);
+    }
+  }
+#endif
+
 namespace Gui {
 
   static void GLFWErrorCallback(int error, const char* description) {
@@ -320,20 +342,23 @@ namespace Gui {
   {
     mWindow->setVSync(true);
     mCamera.resize(mWidth, mHeight);
-
     root = Container::create();
+  }
+
+  void Application::resize(u32 width, u32 height) {
+    mWidth = width;
+    mHeight = height;
+    glViewport(0, 0, mWidth, mHeight);
+    printf("width = %d, height = %d\n", mWidth, mHeight);
+    mCamera.resize(mWidth, mHeight);
+    renderer.invalidate(mWidth, mHeight);
   }
 
   void Application::run() {
     mWindow->setEventCallback([&](const Gui::Event& event) {
       if (event.getType() == Gui::Event::Type::WindowResize) {
-        auto resize = (Gui::WindowResizeEvent&)(event);
-        mWidth = resize.getWidth();
-        mHeight = resize.getHeight();
-        glViewport(0, 0, mWidth, mHeight);
-        printf("width = %d, height = %d\n", mWidth, mHeight);
-        mCamera.resize(mWidth, mHeight);
-        renderer.invalidate(mWidth, mHeight);
+        auto[width, height] = ((Gui::WindowResizeEvent&)event).getSize();
+        resize(width, height);
       } else if (event.getType() == Gui::Event::Type::MouseMove) {
         auto[x, y] = ((MouseMoveEvent&)event).getPosition();
         mMousePosition = {(float)x, (float)y};
@@ -370,24 +395,32 @@ namespace Gui {
       }
     });
 
-    float lastFrameTime = (float)glfwGetTime();
-    while (!mWindow->shouldClose()) {
-        mTime = (float)glfwGetTime();
-        dt = mTime - lastFrameTime;
-        lastFrameTime = mTime;
+    #if GUI_PLATFORM_WEB
+      application = this;
+      emscripten_set_main_loop(emscriptenLogicLoop, 0, 1);
+    #else
+      while (!mWindow->shouldClose()) {
+        logicLoop();
+      }
+    #endif
+  }
 
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        renderer.begin(mCamera.getCamera());
-        renderer.clearScreen();
+  void Application::logicLoop() {
+    mTime = (float)glfwGetTime();
+    dt = mTime - mLastFrameTime;
+    mLastFrameTime = mTime;
 
-        root->layout({0, 0, (float)mWidth, (float)mHeight});
-        root->draw(renderer);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    renderer.begin(mCamera.getCamera());
+    renderer.clearScreen();
 
-        onUpdate();
+    root->layout({0, 0, (float)mWidth, (float)mHeight});
+    root->draw(renderer);
 
-        renderer.end();
-        mWindow->update();
-    }
+    onUpdate();
+
+    renderer.end();
+    mWindow->update();
   }
 }
 

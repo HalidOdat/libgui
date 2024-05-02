@@ -1,0 +1,47 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - name: Setup emscripten SDK
+        uses: mymindstorm/setup-emsdk@v11
+        with:
+          version: 3.1.45
+
+      - name: Verify emscripten SDK
+        run: emcc -v
+
+      - name: Run cmake
+        run: emcmake cmake . -DCMAKE_BUILD_TYPE=$BUILD_TYPE -B build
+
+      - name: Run build system
+        run: cmake --build build --config $BUILD_TYPE -j4
+
+      - name: Create final directory
+        run: mkdir final
+
+      - name: Copy web files to final directory
+        run: cp -rv web/* build/examples/Widget/ExampleWidget* final
+
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: final

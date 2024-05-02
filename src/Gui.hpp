@@ -77,8 +77,14 @@ namespace Gui {
     u32 getHeight() { return mHeight; }
     float getTime() { return mTime; }
     Vec2 getMousePosition() { return mMousePosition; }
+    Window::Handle getWindow() { return mWindow; }
+
+    void resize(u32 width, u32 height);
 
     virtual void onUpdate() {}
+
+  public: // Don't use directly!
+    void logicLoop();
 
   private:
     u32 mWidth  = 620;
@@ -91,6 +97,7 @@ namespace Gui {
   protected:
     Renderer2D renderer;
     float dt;
+    float mLastFrameTime;
 
     Vec2 mMousePosition;
 
