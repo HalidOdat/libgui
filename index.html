@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en-us">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <link rel="apple-touch-icon" sizes="180x180" href="./favicons/apple-touch-icon.png?">
+  <link rel="icon" type="image/png" sizes="32x32" href="./favicons/favicon-32x32.png?">
+  <link rel="icon" type="image/png" sizes="16x16" href="./favicons/favicon-16x16.png?">
+  <link rel="shortcut icon" type="image/x-icon" href="./favicon.ico?">
+  <link rel="manifest" href="./site.webmanifest">
+  <link rel="mask-icon" href="./favicons/safari-pinned-tab.svg" color="#5bbad5">
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="theme-color" content="#ffffff">
+
+  <title>LibGui - Examples</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <div id="components">
+    <div class="spinner" id='spinner'></div>
+    <div class="emscripten" id="status">Downloading...</div>
+    <div class="emscripten">
+      <progress value="0" max="100" id="progress" hidden=1></progress>
+    </div>
+  </div>
+
+  <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
+
+  <script type="text/javascript" src="./script.js"></script>
+  <script defer type="text/javascript" src="ExampleWidget.js"></script>
+</body>
+
+</html>
