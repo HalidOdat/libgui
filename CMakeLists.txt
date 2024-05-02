@@ -13,6 +13,20 @@ set(CMAKE_C_STANDARD 99)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
+if (GUI_SANITIZER)
+  message(STATUS "Emabled sanitizer")
+  add_compile_options(
+      -fsanitize=address
+      -fsanitize=undefined
+      -fsanitize=null
+  )
+  add_link_options(
+      -fsanitize=address
+      -fsanitize=undefined
+      -fsanitize=null
+  )
+endif()
+
 if (${CMAKE_SYSTEM_NAME} STREQUAL Emscripten)
   set(WEB 1)
 endif()
@@ -115,20 +129,6 @@ else()
       $<$<CONFIG:Release>:-Os>
       $<$<CONFIG:MinSizeRel>:-Oz>
   )
-  if (GUI_SANITIZER)
-    target_compile_options(${This}
-      PRIVATE
-        -fsanitize=address
-        -fsanitize=undefined
-        -fsanitize=null
-    )
-    target_link_options(${This}
-      PRIVATE
-        -fsanitize=address
-        -fsanitize=undefined
-        -fsanitize=null
-    )
-  endif()
 endif()
 
 if (DEFINED WEB)

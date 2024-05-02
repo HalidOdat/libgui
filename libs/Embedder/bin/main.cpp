@@ -112,6 +112,9 @@ int main(int argc, char* argv[]) {
       sum += ret;
     }
 
+    // Important for null ternminated strings.
+    write_or_die(output_file, "0 /* Null buffer byte */");
+
     if (ferror(input_file)) {
       perror("error while reading the input file");
       return 3;
