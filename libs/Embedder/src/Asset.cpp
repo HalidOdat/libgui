@@ -37,7 +37,10 @@ namespace Gui {
     mSize = length;
   }
   Asset::Asset(EmbeddedAsset value)
-    : mEmbedded{value.data}, mSize{value.size}, mData{(unsigned char*)value.data}
+    : mPath{std::move(value.path)},
+      mEmbedded{value.data},
+      mSize{value.size},
+      mData{(unsigned char*)value.data}
   {}
   Asset::~Asset() {
     if (!isEmbedded()) {
@@ -49,8 +52,8 @@ namespace Gui {
     return std::make_shared<Asset>(PathAsset { path });
   }
 
-  Asset::Handle Asset::embedded(const unsigned char* embedded, size_t size) {
-    return std::make_shared<Asset>(EmbeddedAsset { embedded, size });
+  Asset::Handle Asset::embedded(std::string path, const unsigned char* embedded, size_t size) {
+    return std::make_shared<Asset>(EmbeddedAsset { path, embedded, size });
   }
 
   bool Asset::load() {

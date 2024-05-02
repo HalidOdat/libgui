@@ -14,10 +14,10 @@ namespace Gui {
     // DISALLOW_COPY_AND_ASSIGN(Asset);
 
     static Asset::Handle path(std::string path);
-    static Asset::Handle embedded(const unsigned char* embedded, size_t size);
+    static Asset::Handle embedded(std::string path, const unsigned char* embedded, size_t size);
 
     inline bool isEmbedded() { return mEmbedded != nullptr; }
-    inline const unsigned char*  data() { return mData; }
+    inline const unsigned char* data() { return mData; }
     inline size_t size() { return mSize; }
     inline const std::string& filepath() const { return mPath; }
 
@@ -30,6 +30,7 @@ namespace Gui {
     };
 
     struct EmbeddedAsset {
+      std::string path;
       const unsigned char* data;
       size_t size;
     };

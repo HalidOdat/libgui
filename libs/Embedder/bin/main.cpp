@@ -148,7 +148,11 @@ int main(int argc, char* argv[]) {
   for (auto&[path, name, sum] : assets) {
     write_or_die(output_file, "  {R\"#10#(");
     write_or_die(output_file, path.c_str());
-    write_or_die(output_file, ")#10#\", Gui::Asset::embedded(");
+    write_or_die(output_file, ")#10#\",");
+    write_or_die(output_file, "Gui::Asset::embedded(");
+    write_or_die(output_file, "R\"#10#(");
+    write_or_die(output_file, path.c_str());
+    write_or_die(output_file, ")#10#\",");
     write_or_die(output_file, name.c_str());
     write_or_die(output_file, ", ");
     write_or_die(output_file, std::to_string(sum).c_str());

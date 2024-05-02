@@ -75,7 +75,8 @@ namespace Gui {
     const std::unordered_map<String, String>& definitions,
     const std::unordered_map<String, String>& globalDefines
   ) {
-    Logger::info("Shader: %s", asset->filepath().c_str());
+    auto filename = asset->filepath();
+    Logger::info("Shader: %s", filename.c_str());
     const StringView typeDelimiter = "@type ";
 
     std::vector<std::pair<Shader::Type, std::string>> result;
@@ -100,7 +101,7 @@ namespace Gui {
     }
 
     if (!asset->load()) {
-      Logger::error("cannot open file '%s': %s", asset->filepath().c_str(), strerror(errno));
+      Logger::error("cannot open file '%s': %s", filename.c_str(), strerror(errno));
       return {};
     }
 
