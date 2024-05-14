@@ -46,6 +46,8 @@ bool callback(Widget::ClickEvent event) {
       container->addChild(child1);
       container->addChild(child2);
     }
+
+    container->addChild(Input::create([](auto& text){ printf("Text: %s\n", text.c_str()); }));
     return false;
   } else if (event.button == MouseButton::_2 && event.target->parent) {
     if (auto container = event.target->parent->as<Container>()) {

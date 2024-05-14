@@ -108,8 +108,8 @@ float RectSDF(vec2 p, vec2 b, float r) {
 
 void effect_roundedCorners(out vec4 fragColor) {
    const float borderThickness = 3.0f;
-   const vec4  borderColor = vec4(0.5f, 0.5f, 0.5f, 1.0f);
    const float radius = 12.0f;
+   vec4  borderColor = vColor;
 
    vec2 pos = vQuadSize * vTexCoord;
         

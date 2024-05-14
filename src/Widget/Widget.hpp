@@ -31,6 +31,7 @@ public:
       Widget* target;
       Key key;
       KeyEventType type;
+      KeyModifier modifier;
     };
     using KeyCallback = std::function<bool(KeyEvent)>;
 
@@ -70,6 +71,8 @@ public:
       }
       return handled;
     }
+
+    inline bool isFocusable() { return mFocusable; }
 protected:
     Widget() = default;
     Widget(Vec2 size) : mSize{size} {}
@@ -79,6 +82,9 @@ public:
 
     Vec2 mPosition{};
     Vec2 mSize{};
+
+    bool mFocusable = false;
+    bool mFocused = false;
 
     std::vector<ClickCallback> mClickCallbacks{};
     std::vector<KeyCallback> mKeyCallbacks{};

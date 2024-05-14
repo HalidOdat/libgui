@@ -367,6 +367,30 @@ namespace Gui {
         auto x = mMousePosition.x;
         auto y = mMousePosition.y;
 
+        bool hasFocused = false;
+        Widget::Visitor focusVisitor = [&](Widget* current) {
+          if (
+            !hasFocused
+            && current->isFocusable()
+            && current->mPosition.x <= x
+            && current->mPosition.y <= y
+            && current->mPosition.x + current->mSize.x > x
+            && current->mPosition.y + current->mSize.y > y
+          ) {
+            Widget::Visitor innerVisitor = [&](Widget* other) {
+              other->mFocused = false;
+              return true;
+            };
+            root->visit(innerVisitor);
+
+            current->mFocused = true;
+            hasFocused = true;
+            return false;
+          }
+          return true;
+        };
+        root->visit(focusVisitor);
+
         Widget::Visitor visitor = [&](Widget* current) {
           if (
             current->mPosition.x <= x
@@ -389,25 +413,49 @@ namespace Gui {
           return true;
         };
 
-        root->visit(visitor);
+        if (!hasFocused) {
+          root->visit(visitor);
+        }
       } else if (
         event.getType() == Gui::Event::Type::KeyPressed
         || event.getType() == Gui::Event::Type::KeyReleased
       ) {
         auto key = ((KeyEvent&)event).getKey();
         auto is_pressed = event.getType() == Gui::Event::Type::KeyPressed;
+        auto modifier = KeyModifier::None;
+        if (is_pressed) {
+          modifier = ((KeyPressedEvent&)event).getModifier();
+        }
+
+        Widget* focusedWidget = nullptr;
+        Widget::Visitor focusVisitor = [&](Widget* current) {
+          if (current->mFocused) {
+            focusedWidget = current;
+            return false;
+          }
+          return true;
+        };
+        root->visit(focusVisitor);
+
+        Widget::KeyEvent keyEvent = {
+          focusedWidget,
+          key,
+          is_pressed ? Widget::KeyEventType::Pressed : Widget::KeyEventType::Released,
+          modifier,
+        };
+
+        if (focusedWidget) {
+          focusedWidget->triggerKeyEvent(keyEvent);
+          return;
+        }
 
         // TODO: Don't go depth first.
         Widget::Visitor visitor = [&](Widget* current) {
           if (current->hasKeyEventHandler()) {
             Logger::trace("Key Event (%d) --> %p", key, (void*)current);
 
-            Widget::KeyEvent event = {
-              current,
-              key,
-              is_pressed ? Widget::KeyEventType::Pressed : Widget::KeyEventType::Released,
-            };
-            return current->triggerKeyEvent(event);
+            keyEvent.target = current;
+            return current->triggerKeyEvent(keyEvent);
           }
 
           return true;
@@ -416,6 +464,8 @@ namespace Gui {
         root->visit(visitor);
       }
     });
+
+    renderer.blending(true);
 
     #if GUI_PLATFORM_WEB
       application = this;

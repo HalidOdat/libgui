@@ -130,6 +130,60 @@ namespace Gui {
     Menu               = 348,
   };
 
+  inline char getKeyChar(Key key) {
+    switch (key) {
+      case Key::Space: return ' ';
+      case Key::Apostrophe: return '\'';
+      case Key::Comma: return ',';
+      case Key::Minus: return '-';
+      case Key::Period: return '.';
+      case Key::Slash: return '/';
+      case Key::_0: return '0';
+      case Key::_1: return '1';
+      case Key::_2: return '2';
+      case Key::_3: return '3';
+      case Key::_4: return '4';
+      case Key::_5: return '5';
+      case Key::_6: return '6';
+      case Key::_7: return '7';
+      case Key::_8: return '8';
+      case Key::_9: return '9';
+      case Key::Semicolon: return ';';
+      case Key::Equal: return '=';
+      case Key::A: return 'a';
+      case Key::B: return 'b';
+      case Key::C: return 'c';
+      case Key::D: return 'd';
+      case Key::E: return 'e';
+      case Key::F: return 'f';
+      case Key::G: return 'g';
+      case Key::H: return 'h';
+      case Key::I: return 'i';
+      case Key::J: return 'j';
+      case Key::K: return 'k';
+      case Key::L: return 'l';
+      case Key::M: return 'm';
+      case Key::N: return 'n';
+      case Key::O: return 'o';
+      case Key::P: return 'p';
+      case Key::Q: return 'q';
+      case Key::R: return 'r';
+      case Key::S: return 's';
+      case Key::T: return 't';
+      case Key::U: return 'u';
+      case Key::V: return 'v';
+      case Key::W: return 'w';
+      case Key::X: return 'x';
+      case Key::Y: return 'y';
+      case Key::Z: return 'z';
+      case Key::LeftBracket: return '[';
+      case Key::Backslash: return '\\';
+      case Key::RightBracket: return '[';
+      case Key::GraveAccent: return '~';
+      default: return 0;
+    }
+  }
+
   enum class KeyModifier : u8 {
     None     = 0x0000,
     Shift    = 0x0001,
