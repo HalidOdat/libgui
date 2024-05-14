@@ -1,7 +1,7 @@
 #pragma once
 
 #include <functional>
-#include <optional>
+#include <vector>
 
 #include "Widget/Constraints.hpp"
 #include "Renderer/Renderer2D.hpp"
@@ -31,9 +31,9 @@ public:
 
     void setPosition(Vec2 position) { mPosition = position; }
 
-    inline void setClickEventHandler(ClickCallback callback) { mClickCallback = callback; }
-    inline void clearClickEventHandler() { mClickCallback = std::nullopt; }
-    inline bool hasClickEventHandler() { return !!mClickCallback; }
+    inline void addClickEventHandler(ClickCallback callback) { mClickCallbacks.push_back(callback); }
+    inline void clearClickEventHandlers() { mClickCallbacks.clear(); }
+    inline bool hasClickEventHandler() { return !mClickCallbacks.empty(); }
 
     template<typename T>
     inline T* as() {
@@ -44,10 +44,11 @@ public:
     }
 
     inline bool click(ClickEvent event) {
-      if (mClickCallback) {
-        return (*mClickCallback)(event);
+      bool handled = false;
+      for (auto& handler : mClickCallbacks) {
+        handled = handled || handler(event);
       }
-      return false;
+      return handled;
     }
 protected:
     Widget() = default;
@@ -59,7 +60,7 @@ public:
     Vec2 mPosition{};
     Vec2 mSize{};
 
-    std::optional<ClickCallback> mClickCallback{};
+    std::vector<ClickCallback> mClickCallbacks{};
 };
 
 } // namespace Gui

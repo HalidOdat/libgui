@@ -20,13 +20,13 @@ bool callback(Widget::ClickEvent event) {
       child1->setAlignment(Alignment::Center);
       child1->setColor(COLOR1);
       child1->setPadding(PADDING);
-      child1->setClickEventHandler(callback);
+      child1->addClickEventHandler(callback);
 
       auto child2 = Row::create();
       child2->setAlignment(Alignment::Center);
       child2->setColor(COLOR3);
       child2->setPadding(PADDING);
-      child2->setClickEventHandler(callback);
+      child2->addClickEventHandler(callback);
 
       container->addChild(child1);
       container->addChild(child2);
@@ -35,19 +35,19 @@ bool callback(Widget::ClickEvent event) {
       child1->setAlignment(Alignment::Center);
       child1->setColor(COLOR2);
       child1->setPadding(PADDING);
-      child1->setClickEventHandler(callback);
+      child1->addClickEventHandler(callback);
 
       auto child2 = Column::create();
       child2->setAlignment(Alignment::Center);
       child2->setColor(COLOR4);
       child2->setPadding(PADDING);
-      child2->setClickEventHandler(callback);
+      child2->addClickEventHandler(callback);
 
       container->addChild(child1);
       container->addChild(child2);
     }
     return false;
-  } else if (event.button == MouseButton::_2) {
+  } else if (event.button == MouseButton::_2 && event.target->parent) {
     if (auto container = event.target->parent->as<Container>()) {
       container->clearChildren();
     }
@@ -66,7 +66,7 @@ public:
     clickableRoot->setAlignment(Alignment::Center);
     clickableRoot->setColor(Color::WHITE);
     clickableRoot->setPadding(PADDING);
-    clickableRoot->setClickEventHandler(callback);
+    clickableRoot->addClickEventHandler(callback);
 
     // Override default root.
     root = clickableRoot;
