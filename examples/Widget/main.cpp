@@ -11,8 +11,8 @@ static constexpr auto COLOR4 = rgba(0xFF6103FF);
 /// Specify the padding for each row/column widget.
 static constexpr Vec4 PADDING = {2.5, 2.5, 2.5, 2.5};
 
-bool callback(Clickable::Event event) {
-  auto container = (Container*)event.target.get();
+bool callback(Widget::ClickEvent event) {
+  auto container = (Container*)event.target;
 
   if (event.button == MouseButton::_1) {
     if (container->as<Column>()) {
@@ -20,31 +20,35 @@ bool callback(Clickable::Event event) {
       child1->setAlignment(Alignment::Center);
       child1->setColor(COLOR1);
       child1->setPadding(PADDING);
+      child1->setClickEventHandler(callback);
 
       auto child2 = Row::create();
       child2->setAlignment(Alignment::Center);
       child2->setColor(COLOR3);
       child2->setPadding(PADDING);
+      child2->setClickEventHandler(callback);
 
-      container->addChild(Clickable::create(child1, callback));
-      container->addChild(Clickable::create(child2, callback));
+      container->addChild(child1);
+      container->addChild(child2);
     } else {
       auto child1 = Column::create();
       child1->setAlignment(Alignment::Center);
       child1->setColor(COLOR2);
       child1->setPadding(PADDING);
+      child1->setClickEventHandler(callback);
 
       auto child2 = Column::create();
       child2->setAlignment(Alignment::Center);
       child2->setColor(COLOR4);
       child2->setPadding(PADDING);
+      child2->setClickEventHandler(callback);
 
-      container->addChild(Clickable::create(child1, callback));
-      container->addChild(Clickable::create(child2, callback));
+      container->addChild(child1);
+      container->addChild(child2);
     }
     return false;
   } else if (event.button == MouseButton::_2) {
-    if (auto container = event.parent->parent->as<Container>()) {
+    if (auto container = event.target->parent->as<Container>()) {
       container->clearChildren();
     }
     return false;
@@ -62,9 +66,10 @@ public:
     clickableRoot->setAlignment(Alignment::Center);
     clickableRoot->setColor(Color::WHITE);
     clickableRoot->setPadding(PADDING);
+    clickableRoot->setClickEventHandler(callback);
 
     // Override default root.
-    root = Clickable::create(clickableRoot, callback);
+    root = clickableRoot;
   }
 };
 

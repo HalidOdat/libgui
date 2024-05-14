@@ -375,16 +375,15 @@ namespace Gui {
             && current->mPosition.x + current->mSize.x > x
             && current->mPosition.y + current->mSize.y > y
           ) {
-            if (auto widget = dynamic_cast<Clickable*>(current)) {
+            if (current->hasClickEventHandler()) {
               Logger::trace("Clicked --> %p", (void*)current);
 
-              Clickable::Event event = {
-                widget,
-                widget->getChild(),
+              Widget::ClickEvent event = {
+                current,
                 mMousePosition,
                 button,
               };
-              return widget->call(event);
+              return current->click(event);
             }
           }
 

@@ -11,7 +11,6 @@
 #include <Widget/Row.hpp>
 #include <Widget/Column.hpp>
 #include <Widget/SizedBox.hpp>
-#include <Widget/Clickable.hpp>
 
 // Forward declare
 struct GLFWwindow;
