@@ -367,7 +367,6 @@ namespace Gui {
         auto x = mMousePosition.x;
         auto y = mMousePosition.y;
 
-        Widget::Handle target = nullptr;
         Widget::Visitor visitor = [&](Widget* current) {
           if (
             current->mPosition.x <= x
@@ -376,7 +375,7 @@ namespace Gui {
             && current->mPosition.y + current->mSize.y > y
           ) {
             if (current->hasClickEventHandler()) {
-              Logger::trace("Clicked --> %p", (void*)current);
+              Logger::trace("Click Event --> %p", (void*)current);
 
               Widget::ClickEvent event = {
                 current,
@@ -385,6 +384,30 @@ namespace Gui {
               };
               return current->click(event);
             }
+          }
+
+          return true;
+        };
+
+        root->visit(visitor);
+      } else if (
+        event.getType() == Gui::Event::Type::KeyPressed
+        || event.getType() == Gui::Event::Type::KeyReleased
+      ) {
+        auto key = ((KeyEvent&)event).getKey();
+        auto is_pressed = event.getType() == Gui::Event::Type::KeyPressed;
+
+        // TODO: Don't go depth first.
+        Widget::Visitor visitor = [&](Widget* current) {
+          if (current->hasKeyEventHandler()) {
+            Logger::trace("Key Event (%d) --> %p", key, (void*)current);
+
+            Widget::KeyEvent event = {
+              current,
+              key,
+              is_pressed ? Widget::KeyEventType::Pressed : Widget::KeyEventType::Released,
+            };
+            return current->triggerKeyEvent(event);
           }
 
           return true;

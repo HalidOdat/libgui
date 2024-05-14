@@ -62,14 +62,14 @@ class MyApplication : public Application {
 public:
   MyApplication() : Application("Hello There", 800, 800)
   {
-    auto clickableRoot = Column::create();
-    clickableRoot->setAlignment(Alignment::Center);
-    clickableRoot->setColor(Color::WHITE);
-    clickableRoot->setPadding(PADDING);
-    clickableRoot->addClickEventHandler(callback);
+    auto newRoot = Column::create();
+    newRoot->setAlignment(Alignment::Center);
+    newRoot->setColor(Color::WHITE);
+    newRoot->setPadding(PADDING);
+    newRoot->addClickEventHandler(callback);
 
     // Override default root.
-    root = clickableRoot;
+    root = newRoot;
   }
 };
 

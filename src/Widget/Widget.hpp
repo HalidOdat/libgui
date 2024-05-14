@@ -5,6 +5,7 @@
 
 #include "Widget/Constraints.hpp"
 #include "Renderer/Renderer2D.hpp"
+#include "Events/KeyEvent.hpp"
 
 namespace Gui {
 
@@ -21,6 +22,18 @@ public:
     };
     using ClickCallback = std::function<bool(ClickEvent)>;
 
+    enum class KeyEventType {
+        Pressed,
+        Released,
+    };
+
+    struct KeyEvent {
+      Widget* target;
+      Key key;
+      KeyEventType type;
+    };
+    using KeyCallback = std::function<bool(KeyEvent)>;
+
 public:
     virtual ~Widget() = default;
 
@@ -35,17 +48,24 @@ public:
     inline void clearClickEventHandlers() { mClickCallbacks.clear(); }
     inline bool hasClickEventHandler() { return !mClickCallbacks.empty(); }
 
+    inline void addKeyEventHandler(KeyCallback callback) { mKeyCallbacks.push_back(callback); }
+    inline void clearKeyEventHandlers() { mKeyCallbacks.clear(); }
+    inline bool hasKeyEventHandler() { return !mKeyCallbacks.empty(); }
+
     template<typename T>
-    inline T* as() {
-        if (!this) {
-            return nullptr;
-        }
-        return dynamic_cast<T*>(this);
-    }
+    inline T* as() { return dynamic_cast<T*>(this); }
 
     inline bool click(ClickEvent event) {
       bool handled = false;
       for (auto& handler : mClickCallbacks) {
+        handled = handled || handler(event);
+      }
+      return handled;
+    }
+
+    inline bool triggerKeyEvent(KeyEvent event) {
+      bool handled = false;
+      for (auto& handler : mKeyCallbacks) {
         handled = handled || handler(event);
       }
       return handled;
@@ -61,6 +81,7 @@ public:
     Vec2 mSize{};
 
     std::vector<ClickCallback> mClickCallbacks{};
+    std::vector<KeyCallback> mKeyCallbacks{};
 };
 
 } // namespace Gui
