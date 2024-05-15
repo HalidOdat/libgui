@@ -24,13 +24,9 @@ Input::Handle Input::create(OnChangeCallback callback, std::string text, float f
       return true;
     }
 
-    auto ch = getKeyChar(event.key);
+    auto ch = getKeyChar(event.key, event.modifier);
     if (!ch) {
       return false;
-    }
-
-    if (event.modifier == KeyModifier::Shift && isalpha(ch)) {
-      ch = toupper(ch);
     }
 
     target->mText.push_back(ch);

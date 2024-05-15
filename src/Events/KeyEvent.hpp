@@ -130,60 +130,6 @@ namespace Gui {
     Menu               = 348,
   };
 
-  inline char getKeyChar(Key key) {
-    switch (key) {
-      case Key::Space: return ' ';
-      case Key::Apostrophe: return '\'';
-      case Key::Comma: return ',';
-      case Key::Minus: return '-';
-      case Key::Period: return '.';
-      case Key::Slash: return '/';
-      case Key::_0: return '0';
-      case Key::_1: return '1';
-      case Key::_2: return '2';
-      case Key::_3: return '3';
-      case Key::_4: return '4';
-      case Key::_5: return '5';
-      case Key::_6: return '6';
-      case Key::_7: return '7';
-      case Key::_8: return '8';
-      case Key::_9: return '9';
-      case Key::Semicolon: return ';';
-      case Key::Equal: return '=';
-      case Key::A: return 'a';
-      case Key::B: return 'b';
-      case Key::C: return 'c';
-      case Key::D: return 'd';
-      case Key::E: return 'e';
-      case Key::F: return 'f';
-      case Key::G: return 'g';
-      case Key::H: return 'h';
-      case Key::I: return 'i';
-      case Key::J: return 'j';
-      case Key::K: return 'k';
-      case Key::L: return 'l';
-      case Key::M: return 'm';
-      case Key::N: return 'n';
-      case Key::O: return 'o';
-      case Key::P: return 'p';
-      case Key::Q: return 'q';
-      case Key::R: return 'r';
-      case Key::S: return 's';
-      case Key::T: return 't';
-      case Key::U: return 'u';
-      case Key::V: return 'v';
-      case Key::W: return 'w';
-      case Key::X: return 'x';
-      case Key::Y: return 'y';
-      case Key::Z: return 'z';
-      case Key::LeftBracket: return '[';
-      case Key::Backslash: return '\\';
-      case Key::RightBracket: return '[';
-      case Key::GraveAccent: return '~';
-      default: return 0;
-    }
-  }
-
   enum class KeyModifier : u8 {
     None     = 0x0000,
     Shift    = 0x0001,
@@ -199,6 +145,60 @@ namespace Gui {
   }
   inline KeyModifier operator&(KeyModifier lhs, KeyModifier rhs) {
     return static_cast<KeyModifier>(static_cast<u8>(lhs) & static_cast<u8>(rhs));
+  }
+
+  inline char getKeyChar(Key key, KeyModifier modifier) {
+    switch (key) {
+      case Key::Space:        return ' ';
+      case Key::Apostrophe:   return modifier == KeyModifier::Shift ? '"' : '\'';
+      case Key::Comma:        return modifier == KeyModifier::Shift ? '<' : ',';
+      case Key::Minus:        return modifier == KeyModifier::Shift ? '_' : '-';
+      case Key::Period:       return modifier == KeyModifier::Shift ? '>' : '.';
+      case Key::Slash:        return modifier == KeyModifier::Shift ? '?' : '/';
+      case Key::_0:           return modifier == KeyModifier::Shift ? ')' : '0';
+      case Key::_1:           return modifier == KeyModifier::Shift ? '!' : '1';
+      case Key::_2:           return modifier == KeyModifier::Shift ? '@' : '2';
+      case Key::_3:           return modifier == KeyModifier::Shift ? '#' : '3';
+      case Key::_4:           return modifier == KeyModifier::Shift ? '$' : '4';
+      case Key::_5:           return modifier == KeyModifier::Shift ? '%' : '5';
+      case Key::_6:           return modifier == KeyModifier::Shift ? '^' : '6';
+      case Key::_7:           return modifier == KeyModifier::Shift ? '&' : '7';
+      case Key::_8:           return modifier == KeyModifier::Shift ? '*' : '8';
+      case Key::_9:           return modifier == KeyModifier::Shift ? '(' : '9';
+      case Key::Semicolon:    return modifier == KeyModifier::Shift ? ':' : ';';
+      case Key::Equal:        return modifier == KeyModifier::Shift ? '+' : '=';
+      case Key::A:            return modifier == KeyModifier::Shift ? 'A' : 'a';
+      case Key::B:            return modifier == KeyModifier::Shift ? 'B' : 'b';
+      case Key::C:            return modifier == KeyModifier::Shift ? 'C' : 'c';
+      case Key::D:            return modifier == KeyModifier::Shift ? 'D' : 'd';
+      case Key::E:            return modifier == KeyModifier::Shift ? 'E' : 'e';
+      case Key::F:            return modifier == KeyModifier::Shift ? 'F' : 'f';
+      case Key::G:            return modifier == KeyModifier::Shift ? 'G' : 'g';
+      case Key::H:            return modifier == KeyModifier::Shift ? 'H' : 'h';
+      case Key::I:            return modifier == KeyModifier::Shift ? 'I' : 'i';
+      case Key::J:            return modifier == KeyModifier::Shift ? 'J' : 'j';
+      case Key::K:            return modifier == KeyModifier::Shift ? 'K' : 'k';
+      case Key::L:            return modifier == KeyModifier::Shift ? 'L' : 'l';
+      case Key::M:            return modifier == KeyModifier::Shift ? 'M' : 'm';
+      case Key::N:            return modifier == KeyModifier::Shift ? 'N' : 'n';
+      case Key::O:            return modifier == KeyModifier::Shift ? 'O' : 'o';
+      case Key::P:            return modifier == KeyModifier::Shift ? 'P' : 'p';
+      case Key::Q:            return modifier == KeyModifier::Shift ? 'Q' : 'q';
+      case Key::R:            return modifier == KeyModifier::Shift ? 'R' : 'r';
+      case Key::S:            return modifier == KeyModifier::Shift ? 'S' : 's';
+      case Key::T:            return modifier == KeyModifier::Shift ? 'T' : 't';
+      case Key::U:            return modifier == KeyModifier::Shift ? 'U' : 'u';
+      case Key::V:            return modifier == KeyModifier::Shift ? 'V' : 'v';
+      case Key::W:            return modifier == KeyModifier::Shift ? 'W' : 'w';
+      case Key::X:            return modifier == KeyModifier::Shift ? 'X' : 'x';
+      case Key::Y:            return modifier == KeyModifier::Shift ? 'Y' : 'y';
+      case Key::Z:            return modifier == KeyModifier::Shift ? 'Z' : 'z';
+      case Key::LeftBracket:  return modifier == KeyModifier::Shift ? '{' : '[';
+      case Key::Backslash:    return modifier == KeyModifier::Shift ? '|' : '\\';
+      case Key::RightBracket: return modifier == KeyModifier::Shift ? '}' : ']';
+      case Key::GraveAccent:  return modifier == KeyModifier::Shift ? '~' : '`';
+      default: return 0;
+    }
   }
 
   class KeyEvent : public Event {
