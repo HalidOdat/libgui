@@ -12,7 +12,7 @@ static constexpr auto COLOR4 = rgba(0xFF6103FF);
 static constexpr Vec4 PADDING = {2.5, 2.5, 2.5, 2.5};
 
 bool callback(Widget::ClickEvent event) {
-  auto container = (Container*)event.target;
+  auto container = (Container*)event.target.get();
 
   if (event.button == MouseButton::_1) {
     if (container->as<Column>()) {

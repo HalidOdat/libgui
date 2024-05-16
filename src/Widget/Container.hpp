@@ -26,13 +26,13 @@ public:
   Vec2 layout(Constraints constraints) override;
   void reportSize() const override;
   void draw(Renderer2D& renderer) override;
-  bool visit(Widget::Visitor& visitor) override {
+  bool visit(Widget::Handle self, Widget::Visitor& visitor) override {
     for (auto child : mChildren) {
-      if (!child->visit(visitor)) {
+      if (!child->visit(child, visitor)) {
         return false;
       }
     }
-    return visitor(this);
+    return visitor(self);
   }
 
 public: // Do NOT use these function use the create functions!

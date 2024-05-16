@@ -83,6 +83,8 @@ namespace Gui {
 
     virtual void onUpdate() {}
 
+    Widget::Handle getById(std::string_view id);
+
   public: // Don't use directly!
     void logicLoop();
 
