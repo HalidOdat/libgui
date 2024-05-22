@@ -115,7 +115,6 @@ else()
   target_compile_options(${This}
     PRIVATE
       -Wall -Wextra -pedantic               # Enable very useful warnings
-      -fno-exceptions                       # Disable exceptions
       # $<$<AND:$<CONFIG:Debug>,$<WEB:>>:-Og>
       $<$<CONFIG:Release>:-Os>
       $<$<CONFIG:MinSizeRel>:-Oz>

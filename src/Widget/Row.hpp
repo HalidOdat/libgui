@@ -12,6 +12,7 @@ public:
 public:
   static Row::Handle create(Vec2 size = {0.0f, 0.0f});
 
+  static Row::Handle deserialize(const YAML::Node& node, std::vector<DeserializationError>& errors);
 public: // Do NOT use these function use the create functions!
   Row(Vec2 size)
     : Container(size)

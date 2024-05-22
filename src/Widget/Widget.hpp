@@ -6,8 +6,15 @@
 #include "Widget/Constraints.hpp"
 #include "Renderer/Renderer2D.hpp"
 #include "Events/KeyEvent.hpp"
+#include <yaml-cpp/yaml.h>
 
 namespace Gui {
+
+struct DeserializationError {
+  int line;
+  int column;
+  std::string message;
+};
 
 class Widget {
 public:
@@ -75,6 +82,8 @@ public:
     inline bool isFocusable() const { return mFocusable; }
     inline const std::string& getId() const { return mId; }
     inline void setId(std::string id) { mId = id; }
+
+    static Widget::Handle deserialize(const YAML::Node& node, std::vector<DeserializationError>& errors);
 protected:
     Widget() = default;
     Widget(Vec2 size) : mSize{size} {}
@@ -92,5 +101,11 @@ public:
     std::vector<ClickCallback> mClickCallbacks{};
     std::vector<KeyCallback> mKeyCallbacks{};
 };
+
+void insertDeserializationError(std::vector<DeserializationError>& errors, YAML::Mark mark, std::string message);
+Vec4 deserializeColor(const YAML::Node& node, std::vector<DeserializationError>& errors);
+std::string deserializeId(const YAML::Node& node, std::vector<DeserializationError>& errors);
+std::vector<Widget::Handle> deserializeChildren(const YAML::Node& node, std::vector<DeserializationError>& errors);
+Vec4 deserializePadding(const YAML::Node& node, std::vector<DeserializationError>& errors);
 
 } // namespace Gui

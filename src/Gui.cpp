@@ -367,10 +367,10 @@ namespace Gui {
         auto x = mMousePosition.x;
         auto y = mMousePosition.y;
 
-        bool hasFocused = false;
+        Widget::Handle focused = nullptr;
         Widget::Visitor focusVisitor = [&](Widget::Handle current) {
           if (
-            !hasFocused
+            !focused
             && current->isFocusable()
             && current->mPosition.x <= x
             && current->mPosition.y <= y
@@ -384,7 +384,7 @@ namespace Gui {
             root->visit(root, innerVisitor);
 
             current->mFocused = true;
-            hasFocused = true;
+            focused = current;
             return false;
           }
           return true;
@@ -413,9 +413,7 @@ namespace Gui {
           return true;
         };
 
-        if (!hasFocused) {
-          root->visit(root, visitor);
-        }
+        root->visit(root, visitor);
       } else if (
         event.getType() == Gui::Event::Type::KeyPressed
         || event.getType() == Gui::Event::Type::KeyReleased

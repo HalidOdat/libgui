@@ -14,6 +14,8 @@ public:
 
   Vec2 layout(Constraints constraints) override;
 
+  static Column::Handle deserialize(const YAML::Node& node, std::vector<DeserializationError>& errors);
+
 public: // Do NOT use these function use the create functions!
   Column(Vec2 size)
     : Container(size)

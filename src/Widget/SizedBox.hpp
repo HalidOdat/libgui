@@ -18,6 +18,8 @@ public:
   void draw(Renderer2D& renderer) override;
   bool visit(Widget::Handle self, Widget::Visitor& visitor) override { return visitor(self); }
 
+  static SizedBox::Handle deserialize(const YAML::Node& node, std::vector<DeserializationError>& errors);
+
 public: // Do NOT use these function use the create functions!
   SizedBox(float width = 0.0, float height = 0.0)
     : Widget({width, height})
