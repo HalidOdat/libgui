@@ -126,8 +126,11 @@ int main(int argc, char* argv[]) {
       "\n};\n"
     );
   
+    auto relative_path_string = relative_path.string();
+    std::replace(relative_path_string.begin(), relative_path_string.end(), '\\', '/');
+
     assets.push_back(Asset{
-      relative_path.string(),
+      relative_path_string,
       name,
       sum
     });

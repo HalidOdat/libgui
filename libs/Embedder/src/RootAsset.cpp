@@ -1,9 +1,13 @@
 #include <RootAsset.hpp>
+#include <algorithm>
 
 namespace Gui {
 
   Asset::Handle RootAsset::get(const std::string& file) {
-    auto value = mAssets.find(file);
+    auto path = file;
+    std::replace(path.begin(), path.end(), '\\', '/');
+
+    auto value = mAssets.find(path);
     if (value == mAssets.end()) {
       return nullptr;
     }
