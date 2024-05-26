@@ -137,17 +137,17 @@ public:
     // Override default root.
     root = widget;
 
-    auto col = getById("TheColumn");
-    col->addClickEventHandler([](auto event) -> bool {
-      printf("I have been clicked!\n");
-      return true;
-    });
+    // auto col = getById("TheColumn");
+    // col->addClickEventHandler([](auto event) -> bool {
+    //   printf("I have been clicked!\n");
+    //   return true;
+    // });
 
-    auto el = getById("result");
-    el->addClickEventHandler([](auto event) -> bool {
-      printf("I have been clicked! (input)\n");
-      return true;
-    });
+    // auto el = getById("result");
+    // el->addClickEventHandler([](auto event) -> bool {
+    //   printf("I have been clicked! (input)\n");
+    //   return true;
+    // });
   }
 };
 

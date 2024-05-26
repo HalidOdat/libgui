@@ -14,10 +14,9 @@ void Container::addChild(Widget::Handle child) {
 }
 
 Vec2 Container::layout(Constraints constraints) {
-  if (mAlignment == Alignment::Center) {
-    constraints.minWidth = constraints.maxWidth;
-    constraints.minHeight = constraints.maxHeight;
-  }
+  size_t fixedWidgetCount = 0;
+  auto fixedWidgetWidth  = 0.0f;
+  auto fixedWidgetHeight = 0.0f;
 
   auto paddingWidth = mPadding.w + mPadding.y;
   auto paddingHeight = mPadding.x + mPadding.z;
@@ -26,11 +25,40 @@ Vec2 Container::layout(Constraints constraints) {
   auto totalWidth  = 0.0f;
   auto totalHeight = 0.0f;
 
+  if (mAlignment == Alignment::Center) {
+    constraints.minWidth = constraints.maxWidth;
+    constraints.minHeight = constraints.maxHeight;
+
+    auto childConstraints = Constraints(
+      0.0, 0.0,
+      (constraints.maxWidth  - paddingWidth),
+      (constraints.maxHeight - paddingHeight) / mChildren.size()
+    );
+
+    for (auto& child : mChildren) {
+      if (!child->mFixedSizeWidget) {
+        continue;
+      }
+
+      fixedWidgetCount++;
+
+      auto childSize = child->layout(childConstraints);
+      // fixedWidgetWidth += childSize.x;
+      fixedWidgetHeight += childSize.y;
+    }
+  }
+
+  auto flexibleWidgetCount = mChildren.size() - fixedWidgetCount;
+  if (!flexibleWidgetCount) {
+    flexibleWidgetCount = 1;
+  }
+
   auto childConstraints = Constraints(
     0.0, 0.0,
-    (constraints.maxWidth - paddingWidth),
-    (constraints.maxHeight - paddingHeight) / mChildren.size()
+    (constraints.maxWidth  - fixedWidgetWidth  - paddingWidth),
+    (constraints.maxHeight - fixedWidgetHeight - paddingHeight) / flexibleWidgetCount
   );
+
   for (auto& child : mChildren) {
     child->setPosition(position); // Parent tells the child what position to be at!
     auto childSize = child->layout(childConstraints);

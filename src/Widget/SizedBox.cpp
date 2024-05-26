@@ -4,10 +4,14 @@
 namespace Gui {
 
 SizedBox::Handle SizedBox::create(float width, float height) {
-  return std::make_shared<SizedBox>(width, height);
+  auto result = std::make_shared<SizedBox>(width, height);
+  result->mFixedSizeWidget = true;
+  return result;
 }
 SizedBox::Handle SizedBox::create(Vec2 size) {
-  return std::make_shared<SizedBox>(size);
+  auto result = std::make_shared<SizedBox>(size);
+  result->mFixedSizeWidget = true;
+  return result;
 }
 
 Vec2 SizedBox::layout(Constraints) {
