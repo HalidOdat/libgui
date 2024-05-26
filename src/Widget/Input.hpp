@@ -22,6 +22,9 @@ public:
 
   static Input::Handle deserialize(const YAML::Node& node, std::vector<DeserializationError>& errors);
 
+  const std::string& getText() { return mText; }
+  const void setText(std::string value) { mText = std::move(value); }
+
 public: // Do NOT use these function use the create functions!
   Input(OnChangeCallback callback, std::string text, float fontSize)
     : mOnChange{callback}, mText{std::move(text)}, mFontSize{fontSize}

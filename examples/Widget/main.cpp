@@ -63,91 +63,18 @@ bool callback(Widget::ClickEvent event) {
   return true;
 }
 
-auto string = R"(
-column:
-  color: red
-  padding: 100
-  children:
-  - input:
-      id: result
-      text: Hello there!
-  - row:
-      padding: 100
-      color: 0x202020
-      children:
-      - input:
-          text: Sup!!
-          font-size: 43
-      - sized-box:
-          color: green
-          height: 400
-          width: 300
-      - button:
-          text: MyButton
-          color: 0xFFFFFF
-          background: 0x404040
-  - column:
-      id: TheColumn
-      padding: 100
-      color: blue
-      children:
-      - column:
-          padding: 100
-          color: red
-          children:
-          - input:
-          - label:
-              text: Hello
-              font-size: 35
-      - column:
-          padding: 100
-          color: red
-          children:
-          - column:
-              padding: 100
-              color: blue
-          - column:
-              padding: 100
-              color: blue
-)";
-
 class MyApplication : public Application {
 public:
   MyApplication() : Application("Hello There", 800, 800)
   {
-    YAML::Node node = YAML::Load(string);
-
-    std::vector<DeserializationError> errors;
-    Widget::Handle widget = Widget::deserialize(node, errors);
-
-    if (!errors.empty()) {
-      for (auto& error : errors) {
-        Logger::error("YAML:%d:%d: %s", error.line, error.column, error.message.c_str());
-      }
-
-      exit(1);
-    }
-
-    // auto newRoot = Column::create();
-    // newRoot->setAlignment(Alignment::Center);
-    // newRoot->setColor(Color::WHITE);
-    // newRoot->setPadding(PADDING);
-    // newRoot->addClickEventHandler(callback);
+    auto newRoot = Column::create();
+    newRoot->setAlignment(Alignment::Center);
+    newRoot->setColor(Color::WHITE);
+    newRoot->setPadding(PADDING);
+    newRoot->addClickEventHandler(callback);
 
     // Override default root.
-    root = widget;
-
-    // auto col = getById("TheColumn");
-    // col->addClickEventHandler([](auto event) -> bool {
-    //   printf("I have been clicked!\n");
-    //   return true;
-    // });
-
-    // auto el = getById("result");
-    // el->addClickEventHandler([](auto event) -> bool {
-    //   printf("I have been clicked! (input)\n");
-    //   return true;
-    // });
+    root = newRoot;
   }
 };
 

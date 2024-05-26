@@ -17,6 +17,8 @@ public:
   void draw(Renderer2D& renderer) override;
   bool visit(Widget::Handle self, Widget::Visitor& visitor) override { return visitor(self); }
 
+  inline void setText(std::string text) { mText = text; }
+  inline std::string getText() const { return mText; }
   inline void setFontSize(float size) { mFontSize = size; }
   inline float getFontSize() const { return mFontSize; }
   inline void setColor(Vec4 color) { mColor = color; }

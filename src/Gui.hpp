@@ -87,6 +87,19 @@ namespace Gui {
 
     Widget::Handle getById(std::string_view id);
 
+    template<typename T>
+    std::vector<Widget::Handle> getByType() {
+      std::vector<Widget::Handle> results;
+      Widget::Visitor visitor = [&](Widget::Handle current){
+        if (current->as<T>()) {
+          results.push_back(current);
+        }
+        return true;
+      };
+      root->visit(root, visitor);
+      return results;
+    }
+
   public: // Don't use directly!
     void logicLoop();
 

@@ -30,7 +30,6 @@ static bool parseHexColor(const std::string& value, Vec3& result) {
   {
     int r, g, b;
     sscanf(match.str(1).c_str(), "%2x%2x%2x", &r, &g, &b);
-    std::cout << "R: " << r << ", G: " << g << ", B: " << b << "\n";
     result = {r/255.0f, g/255.0f, b/255.0f};
     return true;
   }
@@ -66,18 +65,49 @@ std::string deserializeId(const YAML::Node& node, std::vector<DeserializationErr
   return id;
 }
 
-std::vector<Widget::Handle> deserializeChildren(const YAML::Node& node, std::vector<DeserializationError>& errors) {
-  std::vector<Widget::Handle> children;
-  if(node) {
-    if (node.IsSequence()) {
-      for (const auto& child : node) {
-        if (auto widget = Widget::deserialize(child, errors)) {
-          children.push_back(widget);
-        }
-      }
-    } else {
-      insertDeserializationError(errors, node.Mark(), "Expected children field to be a sequence!");
+bool compareNodeWithStaticString(const YAML::Node& node, const char* other) {
+    if (node.IsScalar()) {
+        return node.as<std::string>() == other;
     }
+    return false;
+}
+
+static Widget::Handle deserializeWidget(const YAML::Node& key, const YAML::Node& value, std::vector<DeserializationError>& errors) {
+  if (compareNodeWithStaticString(key, "row")) {
+    return Row::deserialize(value, errors);
+  } else if (compareNodeWithStaticString(key, "column")) {
+    return Column::deserialize(value, errors);
+  } else if (compareNodeWithStaticString(key, "container")) {
+    return Container::deserialize(value, errors);
+  } else if (compareNodeWithStaticString(key, "input")) {
+    return Input::deserialize(value, errors);
+  } else if (compareNodeWithStaticString(key, "sized-box")) {
+    return SizedBox::deserialize(value, errors);
+  } else if (compareNodeWithStaticString(key, "label")) {
+    return Label::deserialize(value, errors);
+  } else if (compareNodeWithStaticString(key, "button")) {
+    return Button::deserialize(value, errors);
+  } else {
+    insertDeserializationError(errors, value.Mark(), "unknown Widget type");
+  }
+
+  return nullptr;
+}
+
+std::vector<Widget::Handle> deserializeChildren(const YAML::Node& node, std::vector<DeserializationError>& errors) {
+  if(!node) {
+    return {};
+  }
+
+  std::vector<Widget::Handle> children;
+  if (node.IsMap()) {
+    for (const auto& child : node) {
+      if (auto widget = deserializeWidget(child.first, child.second, errors)) {
+        children.push_back(widget);
+      }
+    }
+  } else {
+    insertDeserializationError(errors, node.Mark(), "Expected children field to be a sequence!");
   }
 
   return children;
@@ -106,13 +136,6 @@ void Widget::reportSize() const {
     << std::endl;
 }
 
-bool compareNodeWithStaticString(const YAML::Node& node, const char* other) {
-    if (node.IsScalar()) {
-        return node.as<std::string>() == other;
-    }
-    return false;
-}
-
 Widget::Handle Widget::deserialize(const YAML::Node& node, std::vector<DeserializationError>& errors) {
   if (!node.IsMap()) {
     insertDeserializationError(errors, node.Mark(), "Widget name is not a map");
@@ -130,25 +153,7 @@ Widget::Handle Widget::deserialize(const YAML::Node& node, std::vector<Deseriali
     break;
   }
 
-  if (compareNodeWithStaticString(pair->first, "row")) {
-    return Row::deserialize(pair->second, errors);
-  } else if (compareNodeWithStaticString(pair->first, "column")) {
-    return Column::deserialize(pair->second, errors);
-  } else if (compareNodeWithStaticString(pair->first, "container")) {
-    return Container::deserialize(pair->second, errors);
-  } else if (compareNodeWithStaticString(pair->first, "input")) {
-    return Input::deserialize(pair->second, errors);
-  } else if (compareNodeWithStaticString(pair->first, "sized-box")) {
-    return SizedBox::deserialize(pair->second, errors);
-  } else if (compareNodeWithStaticString(pair->first, "label")) {
-    return Label::deserialize(pair->second, errors);
-  } else if (compareNodeWithStaticString(pair->first, "button")) {
-    return Button::deserialize(pair->second, errors);
-  } else {
-    insertDeserializationError(errors, pair->second.Mark(), "unknown Widget type");
-  }
-
-  return nullptr;
+  return deserializeWidget(pair->first, pair->second, errors);
 }
 
 } // namespace Gui
