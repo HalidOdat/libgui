@@ -77,6 +77,7 @@ column:
       children:
       - input:
           text: Sup!!
+          font-size: 43
       - sized-box:
           color: green
           height: 400
@@ -91,6 +92,9 @@ column:
           color: red
           children:
           - input:
+          - label:
+              text: Hello
+              font-size: 35
       - column:
           padding: 100
           color: red

@@ -12,6 +12,7 @@
 #include <Widget/Column.hpp>
 #include <Widget/SizedBox.hpp>
 #include <Widget/Input.hpp>
+#include <Widget/Label.hpp>
 
 // Forward declare
 struct GLFWwindow;

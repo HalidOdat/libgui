@@ -5,6 +5,7 @@
 #include "Widget/Row.hpp"
 #include "Widget/Input.hpp"
 #include "Widget/SizedBox.hpp"
+#include "Widget/Label.hpp"
 
 #include <iostream>
 #include <regex>
@@ -138,6 +139,8 @@ Widget::Handle Widget::deserialize(const YAML::Node& node, std::vector<Deseriali
     return Input::deserialize(pair->second, errors);
   } else if (compareNodeWithStaticString(pair->first, "sized-box")) {
     return SizedBox::deserialize(pair->second, errors);
+  } else if (compareNodeWithStaticString(pair->first, "label")) {
+    return Label::deserialize(pair->second, errors);
   } else {
     insertDeserializationError(errors, pair->second.Mark(), "unknown Widget type");
   }

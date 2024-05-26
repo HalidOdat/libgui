@@ -99,6 +99,8 @@ add_library(${This} STATIC
   src/Widget/SizedBox.hpp
   src/Widget/Input.cpp
   src/Widget/Input.hpp
+  src/Widget/Label.cpp
+  src/Widget/Label.hpp
 
   src/Gui.hpp
   src/Gui.cpp

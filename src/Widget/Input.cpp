@@ -67,7 +67,12 @@ Input::Handle Input::deserialize(const YAML::Node& node, std::vector<Deserializa
     text = node["text"].as<std::string>();
   }
 
-  auto result = Input::create([](auto& _text){}, text);
+  float fontSize = 28;
+  if (node.IsMap() && node["font-size"] && node["font-size"].IsScalar()) {
+    fontSize = node["font-size"].as<float>();
+  }
+
+  auto result = Input::create([](auto& _text){}, text, fontSize);
   result->setId(id);
   return result;
 }
