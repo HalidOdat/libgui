@@ -70,4 +70,24 @@ void Container::draw(Renderer2D& renderer) {
   }
 }
 
+Container::Handle Container::deserialize(const YAML::Node& node, std::vector<DeserializationError>& errors) {
+  if (!node.IsMap()) {
+    insertDeserializationError(errors, node.Mark(), "Expected widget node to be a YAML map");
+    return nullptr;
+  }
+
+  auto id = deserializeId(node["id"], errors);
+  auto children = deserializeChildren(node["children"], errors);
+  auto color = deserializeColor(node["color"], errors);
+  auto padding = deserializePadding(node["padding"], errors);
+
+  auto result = Container::create();
+  result->setId(id);
+  result->setAlignment(Alignment::Center);
+  result->mChildren = children;
+  result->setColor(color);
+  result->setPadding(Vec4{padding});
+  return result;
+}
+
 } // namespace Gui

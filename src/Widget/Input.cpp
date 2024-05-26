@@ -59,4 +59,17 @@ void Input::draw(Renderer2D& renderer) {
   }
 }
 
+Input::Handle Input::deserialize(const YAML::Node& node, std::vector<DeserializationError>& errors) {
+  auto id = deserializeId(node["id"], errors);
+
+  std::string text;
+  if (node.IsMap() && node["text"] && node["text"].IsScalar()) {
+    text = node["text"].as<std::string>();
+  }
+
+  auto result = Input::create([](auto& _text){}, text);
+  result->setId(id);
+  return result;
+}
+
 } // namespace Gui

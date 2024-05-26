@@ -35,6 +35,8 @@ public:
     return visitor(self);
   }
 
+  static Container::Handle deserialize(const YAML::Node& node, std::vector<DeserializationError>& errors);
+
 public: // Do NOT use these function use the create functions!
   Container(Vec2 size)
     : Widget(size)

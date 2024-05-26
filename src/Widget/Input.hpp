@@ -20,6 +20,8 @@ public:
 
   void setFontSize(float size) { mFontSize = size; }
 
+  static Input::Handle deserialize(const YAML::Node& node, std::vector<DeserializationError>& errors);
+
 public: // Do NOT use these function use the create functions!
   Input(OnChangeCallback callback, std::string text, float fontSize)
     : mOnChange{callback}, mText{std::move(text)}, mFontSize{fontSize}
