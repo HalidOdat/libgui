@@ -82,6 +82,10 @@ column:
           color: green
           height: 400
           width: 300
+      - button:
+          text: MyButton
+          color: 0xFFFFFF
+          background: 0x404040
   - column:
       id: TheColumn
       padding: 100

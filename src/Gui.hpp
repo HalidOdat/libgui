@@ -13,6 +13,7 @@
 #include <Widget/SizedBox.hpp>
 #include <Widget/Input.hpp>
 #include <Widget/Label.hpp>
+#include <Widget/Button.hpp>
 
 // Forward declare
 struct GLFWwindow;

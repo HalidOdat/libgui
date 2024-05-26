@@ -101,6 +101,8 @@ add_library(${This} STATIC
   src/Widget/Input.hpp
   src/Widget/Label.cpp
   src/Widget/Label.hpp
+  src/Widget/Button.cpp
+  src/Widget/Button.hpp
 
   src/Gui.hpp
   src/Gui.cpp
