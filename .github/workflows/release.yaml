@@ -21,16 +21,22 @@ jobs:
         include:
           - build: linux
             os: ubuntu-latest
-            asset_name: example-widget-linux-amd64
-            binary_name: examples/Widget/ExampleWidget
+            asset_name_widget: example-widget-linux-amd64
+            binary_name_widget: examples/Widget/ExampleWidget
+            asset_name_calculator: example-calculator-linux-amd64
+            binary_name_calculator: examples/Calculator/Calculator
           - build: macos
             os: macos-latest
-            asset_name: example-widget-macos-amd64
-            binary_name: examples/Widget/ExampleWidget
+            asset_name_widget: example-widget-macos-amd64
+            binary_name_widget: examples/Widget/ExampleWidget
+            asset_name_calculator: example-calculator-macos-amd64
+            binary_name_calculator: examples/Calculator/Calculator
           - build: win-msvc
             os: windows-latest
-            asset_name: example-widget-windows-amd64.exe
-            binary_name: examples/Widget/Release/ExampleWidget.exe
+            asset_name_widget: example-widget-windows-amd64.exe
+            binary_name_widget: examples/Widget/Release/ExampleWidget.exe
+            asset_name_calculator: example-calculator-windows-amd64.exe
+            binary_name_calculator: examples/Calculator/Release/Calculator.exe
 
     steps:
       - name: Checkout Repository
@@ -54,11 +60,20 @@ jobs:
       - name: Build
         run: cmake --build build --config ${{ matrix.build_type }}
 
-      - name: Upload binaries to release
+      - name: Upload Widget Example binary to release
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: build/${{ matrix.binary_name }}
-          asset_name: ${{ matrix.asset_name }}
+          file: build/${{ matrix.binary_name_widget }}
+          asset_name: ${{ matrix.asset_name_widget }}
+          override: true
+          tag: ${{ github.ref }}
+
+      - name: Upload Calculator Example binary to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: build/${{ matrix.binary_name_calculator }}
+          asset_name: ${{ matrix.asset_name_calculator }}
           override: true
           tag: ${{ github.ref }}
