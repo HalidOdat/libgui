@@ -40,9 +40,10 @@ jobs:
 
       - name: Copy web files to final directory
         run: |
-          cp -rv build-web/examples/Calculator/Calculator* build-web
-          cp -rv build-web/examples/Widget/ExampleWidget* build-web
-          cp -rv build-web/examples/Renderer2D/ExampleRenderer2D* build-web
+          cp -rv web/* final
+          cp -rv build/examples/Calculator/Calculator* final
+          cp -rv build/examples/Widget/ExampleWidget* final
+          cp -rv build/examples/Renderer2D/ExampleRenderer2D* final
 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4
