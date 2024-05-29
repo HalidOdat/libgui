@@ -7,6 +7,7 @@ namespace Gui {
 Input::Handle Input::create(OnChangeCallback callback, std::string text, float fontSize) {
   auto target = std::make_shared<Input>(std::move(callback), std::move(text), fontSize);
   target->mFocusable = true;
+  target->mFixedHeightSizeWidget = true;
   target->addKeyEventHandler([=](auto event){
     if (!target->mFocused) {
       return false;
@@ -27,6 +28,21 @@ Input::Handle Input::create(OnChangeCallback callback, std::string text, float f
     auto ch = getKeyChar(event.key, event.modifier);
     if (!ch) {
       return false;
+    }
+
+    switch (target->mType) {
+      case Type::Alpha:
+        if (!isalpha(ch)) {
+          return false;
+        }
+        break;
+      case Type::Numeric:
+        if (!isdigit(ch) || ch != '.') {
+          return false;
+        }
+        break;
+      case Type::None:
+      default:
     }
 
     target->mText.push_back(ch);
@@ -67,12 +83,25 @@ Input::Handle Input::deserialize(const YAML::Node& node, std::vector<Deserializa
     text = node["text"].as<std::string>();
   }
 
-  float fontSize = 28;
+  float fontSize = 28.0f;
   if (node.IsMap() && node["font-size"] && node["font-size"].IsScalar()) {
     fontSize = node["font-size"].as<float>();
   }
 
-  auto result = Input::create([](auto& _text){}, text, fontSize);
+  auto type = Input::Type::None;
+  if (node.IsMap() && node["type"] && node["type"].IsScalar()) {
+    auto value = node["type"].as<std::string>();
+    if (value == "alpha") {
+      type = Input::Type::Alpha;
+    } else if (value == "numeric"){
+      type = Input::Type::Numeric;
+    } else if (value == "none") {
+    } else {
+      insertDeserializationError(errors, node["type"].Mark(), "unknown Input type: " + value);
+    }
+  }
+
+  auto result = Input::create([](auto&){}, text, fontSize);
   result->setId(id);
   return result;
 }

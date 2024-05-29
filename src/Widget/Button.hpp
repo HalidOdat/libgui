@@ -25,6 +25,8 @@ public:
   inline Vec4 getColor() const { return mColor; }
   inline void setBackground(Vec4 color) { mBackground = color; }
   inline Vec4 getBackground() const { return mBackground; }
+  inline void setMargin(Vec4 color) { mMargin = color; }
+  inline Vec4 getMargin() const { return mMargin; }
 
   static Button::Handle deserialize(const YAML::Node& node, std::vector<DeserializationError>& errors);
 
@@ -38,6 +40,7 @@ private:
   float mFontSize;
   Vec4 mColor;
   Vec4 mBackground;
+  Vec4 mMargin{};
 };
 
 } // namespace Gui

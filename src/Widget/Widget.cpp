@@ -53,6 +53,8 @@ Vec4 deserializeColor(const YAML::Node& node, std::vector<DeserializationError>&
     } else {
       insertDeserializationError(errors, node.Mark(), "unknown color: " + value);
     }
+  } else {
+    return Vec4{1.0f, 1.0f, 1.0f, 0.0f};
   }
   return Vec4{color, 1.0f};
 }

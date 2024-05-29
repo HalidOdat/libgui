@@ -97,7 +97,8 @@ public:
 
     bool mFocusable = false;
     bool mFocused = false;
-    bool mFixedSizeWidget = false;
+    bool mFixedWidthSizeWidget = false;
+    bool mFixedHeightSizeWidget = false;
 
     std::vector<ClickCallback> mClickCallbacks{};
     std::vector<KeyCallback> mKeyCallbacks{};

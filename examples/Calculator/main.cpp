@@ -3,105 +3,139 @@
 
 using namespace Gui;
 
+// Define some complement colors
+static constexpr auto COLOR1 = rgba(0x00688BFF);
+static constexpr auto COLOR2 = rgba(0x93B1A6FF);
+static constexpr auto COLOR3 = rgba(0xCD3700FF);
+static constexpr auto COLOR4 = rgba(0xFF6103FF);
+
 auto string = R"(
 row:
-  padding: 200
+  padding: 80
+  color: 0x040D12
   children:
     input:
       id: result
+      font-size: 40
     column:
       children:
         button:
           id: button7
           text: 7
-          color: red
-          background: 0x101010
+          font-size: 40
+          color: 0x040D12
+          background: 0x93B1A6
+          margin: 20
         button:
           id: button8
           text: 8
-          color: red
-          background: 0x101010
+          font-size: 40
+          color: 0x040D12
+          background: 0x93B1A6
+          margin: 20
         button:
           id: button9
           text: 9
-          color: red
-          background: 0x101010
+          font-size: 40
+          color: 0x040D12
+          background: 0x93B1A6
+          margin: 20
         button:
           id: submit
-          text: Calculate
-          color: red
-          background: 0x101010
+          text: Calc
+          font-size: 40
+          color: 0x040D12
+          background: 0x93B1A6
+          margin: 20
     column:
       children:
         button:
           id: button4
           text: 4
-          color: red
-          background: 0x101010
+          font-size: 40
+          color: 0x040D12
+          background: 0x93B1A6
+          margin: 20
         button:
           id: button5
           text: 5
-          color: red
-          background: 0x101010
+          font-size: 40
+          color: 0x040D12
+          background: 0x93B1A6
+          margin: 20
         button:
           id: button6
           text: 6
-          color: red
-          background: 0x101010
+          font-size: 40
+          color: 0x040D12
+          background: 0x93B1A6
+          margin: 20
         button:
-          id: clear
-          text: Clear
-          color: red
-          background: 0x101010
+          id: plus
+          text: '+'
+          color: 0x040D12
+          background: 0x93B1A6
+          margin: 20
     column:
       children:
         button:
           id: button1
           text: 1
-          color: red
-          background: 0x101010
+          font-size: 40
+          color: 0x040D12
+          background: 0x93B1A6
+          margin: 20
         button:
           id: button2
           text: 2
-          color: red
-          background: 0x101010
+          font-size: 40
+          color: 0x040D12
+          background: 0x93B1A6
+          margin: 20
         button:
           id: button3
           text: 3
-          color: red
-          background: 0x101010
+          font-size: 40
+          color: 0x040D12
+          background: 0x93B1A6
+          margin: 20
         button:
-          id: plus
-          text: '+'
-          color: red
-          background: 0x101010
+          id: minus
+          text: '-'
+          font-size: 40
+          color: 0x040D12
+          background: 0x93B1A6
+          margin: 20
     column:
       children:
         button:
           id: button0
           text: 0
-          color: red
-          background: 0x101010
+          font-size: 40
+          color: 0x040D12
+          background: 0x93B1A6
+          margin: 20
         button:
           id: dot
           text: '.'
-          color: red
-          background: 0x101010
+          font-size: 40
+          color: 0x040D12
+          background: 0x93B1A6
+          margin: 20
         button:
           id: mul
           text: '*'
-          color: red
-          background: 0x101010
+          font-size: 40
+          color: 0x040D12
+          background: 0x93B1A6
+          margin: 20
         button:
           id: div
           text: '/'
-          color: red
-          background: 0x101010
-        button:
-          id: minus
-          text: '-'
-          color: red
-          background: 0x101010
+          font-size: 40
+          color: 0x040D12
+          background: 0x93B1A6
+          margin: 20
 )";
 
 class MyApplication : public Application {
@@ -128,7 +162,7 @@ public:
 
     auto buttons = getByType<Button>();
     for (auto button : buttons) {
-      if (button->getId() == "submit" || button->getId() == "clear") {
+      if (button->getId() == "submit") {
         continue;
       }
 
@@ -146,12 +180,6 @@ public:
       } catch (const std::exception &ex) {
           // std::cerr << "Error: " << ex.what() << std::endl;
       }
-      return true;
-    });
-
-    auto clear = getById("clear");
-    clear->addClickEventHandler([input](auto event) -> bool {
-      input->as<Input>()->setText("");
       return true;
     });
   }

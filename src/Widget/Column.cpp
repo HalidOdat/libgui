@@ -33,7 +33,7 @@ Vec2 Column::layout(Constraints constraints) {
     );
 
     for (auto& child : mChildren) {
-      if (!child->mFixedSizeWidget) {
+      if (!child->mFixedWidthSizeWidget) {
         continue;
       }
 

@@ -36,7 +36,7 @@ Vec2 Container::layout(Constraints constraints) {
     );
 
     for (auto& child : mChildren) {
-      if (!child->mFixedSizeWidget) {
+      if (!child->mFixedHeightSizeWidget) {
         continue;
       }
 

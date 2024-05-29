@@ -44,7 +44,7 @@ public: // Do NOT use these function use the create functions!
 
 protected:
   std::vector<Widget::Handle> mChildren;
-  Vec4 mColor;
+  Vec4 mColor{1.0f, 1.0f, 1.0f, 0.0f};
 
   Vec4 mPadding{};
   Alignment mAlignment{Alignment::None};

@@ -17,23 +17,26 @@ Button::Handle Button::create(std::string text, float fontSize) {
 
 Vec2 Button::layout(Constraints constraints) {
   mSize.x = constraints.maxWidth;
-  mSize.y = std::max(constraints.minHeight, std::min(constraints.maxHeight, mFontSize * 2.0f));
+  mSize.y = constraints.maxHeight;
   return mSize;
 }
 
 void Button::draw(Renderer2D& renderer) {
   renderer.drawQuad(
-    mPosition,
-    mSize,
+    mPosition + Vec2{mMargin.x, mMargin.y},
+    mSize - Vec2{mMargin.x, mMargin.y} - Vec2{mMargin.z, mMargin.w},
     mBackground
   );
   auto charWidth = (mFontSize - mFontSize/7.0f);
-  auto sizeUnits = (mSize.x / charWidth - mText.size()) / 2.0f * charWidth;
+  auto sizeUnitsWidth = ((mSize.x - mMargin.x - mMargin.z) / charWidth - mText.size()) / 2.0f * charWidth;
+
+  auto charHeight = mFontSize;
+  auto sizeUnitsHeigth = ((mSize.y - mMargin.y - mMargin.w) / charHeight) / 2.0f * charHeight;
   auto offset = Vec2{
-    sizeUnits,
-    mFontSize/2.0f,
+    sizeUnitsWidth,
+    sizeUnitsHeigth,
   };
-  renderer.drawText(mText, mPosition + offset, mFontSize, mColor);
+  renderer.drawText(mText, mPosition + Vec2{mMargin.x, mMargin.y} + offset, mFontSize, mColor);
 }
 
 Button::Handle Button::deserialize(const YAML::Node& node, std::vector<DeserializationError>& errors) {
@@ -51,10 +54,16 @@ Button::Handle Button::deserialize(const YAML::Node& node, std::vector<Deseriali
     fontSize = node["font-size"].as<float>();
   }
 
+  float margin = 28;
+  if (node.IsMap() && node["margin"] && node["margin"].IsScalar()) {
+    margin = node["margin"].as<float>();
+  }
+
   auto result = Button::create(text, fontSize);
   result->setId(id);
   result->setColor(color);
   result->setBackground(background);
+  result->setMargin(Vec4{margin});
   return result;
 }
 
