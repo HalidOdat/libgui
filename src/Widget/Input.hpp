@@ -32,7 +32,7 @@ public:
 
   const std::string& getText() { return mText; }
   void setText(std::string value) { mText = std::move(value); }
-  const Type getType() { return mType; }
+  Type getType() { return mType; }
   void setType(Type value) { mType = value; }
 
 public: // Do NOT use these function use the create functions!

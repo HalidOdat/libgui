@@ -31,6 +31,7 @@ Input::Handle Input::create(OnChangeCallback callback, std::string text, float f
     }
 
     switch (target->mType) {
+      case Type::None: break;
       case Type::Alpha:
         if (!isalpha(ch)) {
           return false;
@@ -41,8 +42,6 @@ Input::Handle Input::create(OnChangeCallback callback, std::string text, float f
           return false;
         }
         break;
-      case Type::None:
-      default:
     }
 
     target->mText.push_back(ch);
