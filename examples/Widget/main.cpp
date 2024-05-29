@@ -65,7 +65,7 @@ bool callback(Widget::ClickEvent event) {
 
 class MyApplication : public Application {
 public:
-  MyApplication() : Application("Hello There", 800, 800)
+  MyApplication() : Application("LibGUI - Widget Splitting Example", 800, 800)
   {
     auto newRoot = Column::create();
     newRoot->setAlignment(Alignment::Center);

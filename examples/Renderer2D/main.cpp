@@ -3,7 +3,7 @@
 class MyApplication : public Gui::Application {
 public:
   MyApplication()
-    : Application("", 800, 800)
+    : Application("LibGUI - Renderer 2D Example", 800, 800)
   {}
 
   void onUpdate() override {

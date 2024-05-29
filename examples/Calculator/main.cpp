@@ -140,7 +140,7 @@ row:
 
 class MyApplication : public Application {
 public:
-  MyApplication() : Application("Hello There", 800, 800)
+  MyApplication() : Application("LibGUI - Calculator Example", 800, 800)
   {
     YAML::Node node = YAML::Load(string);
 
