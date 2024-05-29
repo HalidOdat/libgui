@@ -14,22 +14,79 @@
   <meta name="theme-color" content="#ffffff">
 
   <title>LibGui - Examples</title>
-  <link rel="stylesheet" href="style.css">
+  <style>
+    html, body {
+      width: 100%;
+      height: 100%;
+    }
+    body, h1, h2, h3, h4, h5, h6  {
+      font-family: Helvetica, Arial, sans-serif;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      height: 100%;
+    }
+
+    .header {
+      font-size: 3.5em;
+    }
+
+    .card {
+      width: 500px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 20px;
+      display: inline-block;
+      vertical-align: top;
+    }
+
+    .card img {
+      width: 100%;
+      border-radius: 8px;
+    }
+
+    .subtext {
+      color: #666;
+      font-size: 14px;
+      margin-top: 10px;
+    }
+  </style>
 </head>
 
 <body>
-  <div id="components">
-    <div class="spinner" id='spinner'></div>
-    <div class="emscripten" id="status">Downloading...</div>
-    <div class="emscripten">
-      <progress value="0" max="100" id="progress" hidden=1></progress>
-    </div>
+
+<div class="container">
+  <h1 class="header">LibGUI Examples</h1>
+  <div>
+    <a href="./calculator-example.html" target="_blank">
+      <div class="card">
+        <img src="images/calculator.png" alt="Calculator">
+        <p class="subtext">Functional Calculator.</p>
+      </div>
+    </a>
+    
+    <a href="./widget-example.html" target="_blank">
+      <div class="card">
+        <img src="images/splitting-widgets.png" alt="Splitting Widgets">
+        <p class="subtext">Column and Row layout splitting with click event listeners, right-click splits and unsplit with left-click.</p>
+      </div>
+    </a>
+    
+    <a href="./renderer-example.html" target="_blank">
+      <div class="card">
+        <img src="images/renderer.png" alt="Renderer">
+        <p class="subtext">Show the renderer capability of LibGUI's 2D renderer.</p>
+      </div>
+    </a>
   </div>
+</div>
 
-  <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
-
-  <script type="text/javascript" src="./script.js"></script>
-  <script defer type="text/javascript" src="ExampleWidget.js"></script>
 </body>
 
 </html>
