@@ -30,10 +30,18 @@ public:
 
   static Input::Handle deserialize(const YAML::Node& node, std::vector<DeserializationError>& errors);
 
-  const std::string& getText() { return mText; }
+  const std::string& getText() const { return mText; }
   void setText(std::string value) { mText = std::move(value); }
-  Type getType() { return mType; }
+  Type getType() const { return mType; }
   void setType(Type value) { mType = value; }
+
+  void setOnChange(OnChangeCallback onChange) { mOnChange = std::move(onChange); }
+
+  void setHint(std::string value) { mHint = value; }
+  const std::string& getHint() const { return mHint; }
+
+  void setColor(Vec4 value) { mColor = value; }
+  Vec4 getColor() const { return mColor; }
 
 public: // Do NOT use these function use the create functions!
   Input(OnChangeCallback callback, std::string text, float fontSize)
@@ -42,9 +50,12 @@ public: // Do NOT use these function use the create functions!
 
 private:
   OnChangeCallback mOnChange;
-  std::string mText;
+  std::string mText{};
+  std::string mHint{};
   float mFontSize;
   Type mType = Type::None;
+
+  Vec4 mColor = Color::BLACK;
 };
 
 } // namespace Gui

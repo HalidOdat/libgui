@@ -14,6 +14,7 @@
 #include <Widget/Input.hpp>
 #include <Widget/Label.hpp>
 #include <Widget/Button.hpp>
+#include <Widget/TextArea.hpp>
 
 // Forward declare
 struct GLFWwindow;
@@ -99,6 +100,8 @@ namespace Gui {
       root->visit(root, visitor);
       return results;
     }
+
+    bool focus(Widget::Handle widget);
 
   public: // Don't use directly!
     void logicLoop();

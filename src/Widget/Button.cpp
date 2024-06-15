@@ -1,6 +1,7 @@
 #include "Widget/Button.hpp"
 #include <Core/Color.hpp>
 #include <cctype>
+#include <cmath>
 
 namespace Gui {
 
@@ -16,27 +17,29 @@ Button::Handle Button::create(std::string text, float fontSize) {
 }
 
 Vec2 Button::layout(Constraints constraints) {
-  mSize.x = constraints.maxWidth;
-  mSize.y = constraints.maxHeight;
+  mFixedWidthSizeWidget = !std::isinf(mWidth);
+  mFixedHeightSizeWidget = !std::isinf(mHeight);
+  mSize.x = std::min(mWidth, constraints.maxWidth);
+  mSize.y = std::min(mHeight, constraints.maxHeight);
   return mSize;
 }
 
 void Button::draw(Renderer2D& renderer) {
-  renderer.drawQuad(
-    mPosition + Vec2{mMargin.x, mMargin.y},
-    mSize - Vec2{mMargin.x, mMargin.y} - Vec2{mMargin.z, mMargin.w},
-    mBackground
-  );
+  auto position = mPosition + Vec2{mMargin.x, mMargin.y};
+  auto size     = mSize - Vec2{mMargin.x, mMargin.y} - Vec2{mMargin.z, mMargin.w};
+
+  renderer.drawQuad(position, size, mBackground);
+
   auto charWidth = (mFontSize - mFontSize/7.0f);
-  auto sizeUnitsWidth = ((mSize.x - mMargin.x - mMargin.z) / charWidth - mText.size()) / 2.0f * charWidth;
+  auto sizeUnitsWidth = (size.x / charWidth - mText.size()) / 2.0f * charWidth - charWidth / 2.0f;
 
   auto charHeight = mFontSize;
-  auto sizeUnitsHeigth = ((mSize.y - mMargin.y - mMargin.w) / charHeight) / 2.0f * charHeight;
+  auto sizeUnitsHeigth = (size.y / charHeight) / 2.0f * charHeight - charHeight / 2.0f;
   auto offset = Vec2{
     sizeUnitsWidth,
     sizeUnitsHeigth,
   };
-  renderer.drawText(mText, mPosition + Vec2{mMargin.x, mMargin.y} + offset, mFontSize, mColor);
+  renderer.drawText(mText, position + offset, mFontSize, mColor);
 }
 
 Button::Handle Button::deserialize(const YAML::Node& node, std::vector<DeserializationError>& errors) {
@@ -59,11 +62,23 @@ Button::Handle Button::deserialize(const YAML::Node& node, std::vector<Deseriali
     margin = node["margin"].as<float>();
   }
 
+  float width = INFINITY;
+  if (node.IsMap() && node["width"] && node["width"].IsScalar()) {
+    width = node["width"].as<float>();
+  }
+
+  float height = INFINITY;
+  if (node.IsMap() && node["height"] && node["height"].IsScalar()) {
+    height = node["height"].as<float>();
+  }
+
   auto result = Button::create(text, fontSize);
   result->setId(id);
   result->setColor(color);
   result->setBackground(background);
   result->setMargin(Vec4{margin});
+  result->setWidth(width);
+  result->setHeight(height);
   return result;
 }
 

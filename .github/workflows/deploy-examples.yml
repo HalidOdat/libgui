@@ -41,6 +41,7 @@ jobs:
       - name: Copy web files to final directory
         run: |
           cp -rv web/* final
+          cp -rv build/examples/Playground/Playground* final
           cp -rv build/examples/Calculator/Calculator* final
           cp -rv build/examples/Widget/ExampleWidget* final
           cp -rv build/examples/Renderer2D/ExampleRenderer2D* final

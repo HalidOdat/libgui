@@ -2,6 +2,7 @@
 
 #include <Events/MouseEvent.hpp>
 #include "Widget/Widget.hpp"
+#include <cmath>
 
 namespace Gui {
 
@@ -27,6 +28,10 @@ public:
   inline Vec4 getBackground() const { return mBackground; }
   inline void setMargin(Vec4 color) { mMargin = color; }
   inline Vec4 getMargin() const { return mMargin; }
+  inline void setWidth(float size) { mWidth = size; }
+  inline float getWidth() const { return mWidth; }
+  inline void setHeight(float size) { mHeight = size; }
+  inline float getHeight() const { return mHeight; }
 
   static Button::Handle deserialize(const YAML::Node& node, std::vector<DeserializationError>& errors);
 
@@ -41,6 +46,9 @@ private:
   Vec4 mColor;
   Vec4 mBackground;
   Vec4 mMargin{};
+
+  float mWidth{INFINITY};
+  float mHeight{INFINITY};
 };
 
 } // namespace Gui

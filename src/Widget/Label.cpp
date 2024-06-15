@@ -5,7 +5,9 @@
 namespace Gui {
 
 Label::Handle Label::create(std::string text, float fontSize) {
-  return std::make_shared<Label>(std::move(text), fontSize);
+  auto result = std::make_shared<Label>(std::move(text), fontSize);
+  result->mFixedHeightSizeWidget = true;
+  return result;
 }
 
 Vec2 Label::layout(Constraints constraints) {
@@ -15,7 +17,7 @@ Vec2 Label::layout(Constraints constraints) {
 }
 
 void Label::draw(Renderer2D& renderer) {
-  renderer.drawText(mText, mPosition + mFontSize/2.0f, mFontSize, Color::BLACK);
+  renderer.drawText(mText, mPosition + mFontSize/2.0f, mFontSize, mColor);
 }
 
 Label::Handle Label::deserialize(const YAML::Node& node, std::vector<DeserializationError>& errors) {
@@ -31,8 +33,11 @@ Label::Handle Label::deserialize(const YAML::Node& node, std::vector<Deserializa
     fontSize = node["font-size"].as<float>();
   }
 
+  auto color = deserializeColor(node["color"], errors);
+
   auto result = Label::create(text, fontSize);
   result->setId(id);
+  result->setColor(color);
   return result;
 }
 

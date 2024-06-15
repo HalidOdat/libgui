@@ -505,5 +505,25 @@ namespace Gui {
     root->visit(root, visitor);
     return result;
   }
+
+  bool Application::focus(Widget::Handle widget) {
+    if (!widget) {
+      return false;
+    }
+    if (!widget->mFocusable) {
+      return false;
+    }
+
+    // Clear focus on all other elements
+    Widget::Visitor innerVisitor = [&](Widget::Handle other) {
+      other->mFocused = false;
+      return true;
+    };
+    root->visit(root, innerVisitor);
+
+    // Focus the element
+    widget->mFocused = true;
+    return true;
+  }
 }
 

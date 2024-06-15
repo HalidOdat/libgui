@@ -53,6 +53,8 @@ add_library(${This} STATIC
   src/Core/Color.hpp
   src/Core/OpenGL.hpp
   src/Core/Base.hpp
+  src/Core/Editor.hpp
+  src/Core/Editor.cpp
 
   src/Utils/String.hpp
   src/Utils/String.cpp
@@ -103,6 +105,8 @@ add_library(${This} STATIC
   src/Widget/Label.hpp
   src/Widget/Button.cpp
   src/Widget/Button.hpp
+  src/Widget/TextArea.cpp
+  src/Widget/TextArea.hpp
 
   src/Gui.hpp
   src/Gui.cpp

@@ -64,7 +64,11 @@ void Input::draw(Renderer2D& renderer) {
     mFocused ? rgba(0xAA2222FF) : rgba(0x222222FF),
     Effect::Type::Rounded
   );
-  renderer.drawText(mText, mPosition + mFontSize/2.0f, mFontSize, Color::BLACK);
+  if (!mText.empty()) {
+    renderer.drawText(mText, mPosition + mFontSize/2.0f, mFontSize, mColor);
+  } else {
+    renderer.drawText(mHint, mPosition + mFontSize/2.0f, mFontSize, Color::DARK_GRAY);
+  }
   if (mFocused) {
     renderer.drawQuad(
       (mPosition + mFontSize/2.0f) + Vec2{(mFontSize - mFontSize/7.0f) * mText.size(), 0.0f},
@@ -80,6 +84,11 @@ Input::Handle Input::deserialize(const YAML::Node& node, std::vector<Deserializa
   std::string text;
   if (node.IsMap() && node["text"] && node["text"].IsScalar()) {
     text = node["text"].as<std::string>();
+  }
+
+  std::string hint;
+  if (node.IsMap() && node["hint"] && node["hint"].IsScalar()) {
+    hint = node["hint"].as<std::string>();
   }
 
   float fontSize = 28.0f;
@@ -100,8 +109,16 @@ Input::Handle Input::deserialize(const YAML::Node& node, std::vector<Deserializa
     }
   }
 
+  auto color = Color::BLACK;
+  if (node["color"]) {
+    color = deserializeColor(node["color"], errors);
+  }
+
   auto result = Input::create([](auto&){}, text, fontSize);
   result->setId(id);
+  result->setType(type);
+  result->setHint(hint);
+  result->setColor(color);
   return result;
 }
 

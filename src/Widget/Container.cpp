@@ -36,13 +36,12 @@ Vec2 Container::layout(Constraints constraints) {
     );
 
     for (auto& child : mChildren) {
+      auto childSize = child->layout(childConstraints);
       if (!child->mFixedHeightSizeWidget) {
         continue;
       }
 
       fixedWidgetCount++;
-
-      auto childSize = child->layout(childConstraints);
       // fixedWidgetWidth += childSize.x;
       fixedWidgetHeight += childSize.y;
     }
@@ -51,6 +50,11 @@ Vec2 Container::layout(Constraints constraints) {
   auto flexibleWidgetCount = mChildren.size() - fixedWidgetCount;
   if (!flexibleWidgetCount) {
     flexibleWidgetCount = 1;
+
+    auto spaceLeft = constraints.maxHeight - fixedWidgetHeight;
+    if (spaceLeft >= 0.0f && mAlignment == Alignment::Center) {
+      position.y += spaceLeft / 2.0f;
+    }
   }
 
   auto childConstraints = Constraints(

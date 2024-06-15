@@ -7,6 +7,7 @@
 #include "Widget/SizedBox.hpp"
 #include "Widget/Label.hpp"
 #include "Widget/Button.hpp"
+#include "Widget/TextArea.hpp"
 
 #include <iostream>
 #include <regex>
@@ -89,6 +90,8 @@ static Widget::Handle deserializeWidget(const YAML::Node& key, const YAML::Node&
     return Label::deserialize(value, errors);
   } else if (compareNodeWithStaticString(key, "button")) {
     return Button::deserialize(value, errors);
+    } else if (compareNodeWithStaticString(key, "textarea")) {
+    return TextArea::deserialize(value, errors);
   } else {
     insertDeserializationError(errors, value.Mark(), "unknown Widget type");
   }
