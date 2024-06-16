@@ -7,6 +7,7 @@
 #include "Widget/SizedBox.hpp"
 #include "Widget/Label.hpp"
 #include "Widget/Button.hpp"
+#include "Widget/CheckBox.hpp"
 #include "Widget/TextArea.hpp"
 
 #include <iostream>
@@ -90,7 +91,9 @@ static Widget::Handle deserializeWidget(const YAML::Node& key, const YAML::Node&
     return Label::deserialize(value, errors);
   } else if (compareNodeWithStaticString(key, "button")) {
     return Button::deserialize(value, errors);
-    } else if (compareNodeWithStaticString(key, "textarea")) {
+  } else if (compareNodeWithStaticString(key, "checkbox")) {
+    return CheckBox::deserialize(value, errors);
+  } else if (compareNodeWithStaticString(key, "textarea")) {
     return TextArea::deserialize(value, errors);
   } else {
     insertDeserializationError(errors, value.Mark(), "unknown Widget type");
@@ -107,7 +110,7 @@ std::vector<Widget::Handle> deserializeChildren(const YAML::Node& node, std::vec
   std::vector<Widget::Handle> children;
   if (node.IsMap()) {
     for (const auto& child : node) {
-      if (auto widget = deserializeWidget(child.first, child.second, errors)) {
+      if (auto widget = deserializeWidget(child.first, child.second, errors); widget) {
         children.push_back(widget);
       }
     }

@@ -14,6 +14,7 @@
 #include <Widget/Input.hpp>
 #include <Widget/Label.hpp>
 #include <Widget/Button.hpp>
+#include <Widget/CheckBox.hpp>
 #include <Widget/TextArea.hpp>
 
 // Forward declare

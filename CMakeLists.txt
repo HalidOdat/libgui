@@ -105,6 +105,8 @@ add_library(${This} STATIC
   src/Widget/Label.hpp
   src/Widget/Button.cpp
   src/Widget/Button.hpp
+  src/Widget/CheckBox.cpp
+  src/Widget/CheckBox.hpp
   src/Widget/TextArea.cpp
   src/Widget/TextArea.hpp
 

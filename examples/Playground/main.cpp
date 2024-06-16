@@ -19,10 +19,19 @@ auto initial = R"(row:
     label:
       text: SignIn Form
       color: 0xfed766
+      margin: 10
     input:
       hint: Enter your email here...
     input:
       hint: Enter your password here...
+    column:
+      main-axis: start
+      padding: 10
+      height: 60
+      children:
+        checkbox:
+        label:
+          text: "Tearms & Conditions"
     button:
       text: Submit
       font-size: 30

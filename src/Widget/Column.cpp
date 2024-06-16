@@ -11,7 +11,13 @@ Column::Handle Column::create(Vec2 size) {
 }
 
 Vec2 Column::layout(Constraints constraints) {
-  size_t fixedWidgetCount = 0;
+  mFixedWidthSizeWidget  = !std::isinf(mWidth);
+  mFixedHeightSizeWidget = !std::isinf(mHeight);
+  constraints.maxWidth   = std::min(constraints.maxWidth, mWidth);
+  constraints.maxHeight  = std::min(constraints.maxHeight, mHeight);
+
+  size_t fixedWidgetWidthCount  = 0;
+  size_t fixedWidgetHeightCount = 0;
   auto fixedWidgetWidth  = 0.0f;
   auto fixedWidgetHeight = 0.0f;
 
@@ -22,49 +28,83 @@ Vec2 Column::layout(Constraints constraints) {
   auto totalWidth  = 0.0f;
   auto totalHeight = 0.0f;
 
-  if (mAlignment == Alignment::Center) {
-    constraints.minWidth = constraints.maxWidth;
-    constraints.minHeight = constraints.maxHeight;
-
-    auto childConstraints = Constraints(
-      0.0, 0.0,
-      (constraints.maxWidth  - paddingWidth) / mChildren.size(),
-      (constraints.maxHeight - paddingHeight)
-    );
-
-    for (auto& child : mChildren) {
-      auto childSize = child->layout(childConstraints);
-      if (!child->mFixedWidthSizeWidget) {
-        continue;
-      }
-
-      fixedWidgetCount++;
-      fixedWidgetWidth += childSize.x;
-      // fixedWidgetHeight += childSize.y;
-    }
-  }
-
-  auto flexibleWidgetCount = mChildren.size() - fixedWidgetCount;
-  if (!flexibleWidgetCount) {
-    flexibleWidgetCount = 1;
-
-    auto spaceLeft = constraints.maxWidth - fixedWidgetWidth;
-    if (spaceLeft >= 0.0f && mAlignment == Alignment::Center) {
-      position.x += spaceLeft / 2.0f;
-    }
-  }
-
   auto childConstraints = Constraints(
     0.0, 0.0,
-    (constraints.maxWidth  - fixedWidgetWidth  - paddingWidth) / flexibleWidgetCount,
-    (constraints.maxHeight - fixedWidgetHeight - paddingHeight)
+    (constraints.maxWidth  - paddingWidth) / mChildren.size(),
+    (constraints.maxHeight - paddingHeight)
+  );
+
+  for (auto& child : mChildren) {
+    auto childSize = child->layout(childConstraints);
+    if (child->mFixedWidthSizeWidget) {
+      fixedWidgetWidthCount++;
+      fixedWidgetWidth += childSize.x;
+    }
+    if (child->mFixedHeightSizeWidget) {
+      fixedWidgetHeightCount++;
+      fixedWidgetHeight += childSize.y;
+    }
+  }
+
+  auto flexibleWidgetWidthCount = mChildren.size() - fixedWidgetWidthCount;
+  auto flexibleWidgetHeightCount = mChildren.size() - fixedWidgetHeightCount;
+  if (mAlignment == Alignment::Center) {
+    constraints.minHeight = constraints.maxHeight;
+    constraints.minWidth = constraints.maxWidth;
+  } else if (mAlignment == Alignment::Vertical) {
+    constraints.minWidth = constraints.maxWidth;
+  } else if (mAlignment == Alignment::Horizontal) {
+    constraints.minHeight = constraints.maxHeight;
+  }
+  if (!flexibleWidgetWidthCount) {
+    flexibleWidgetWidthCount = 1;
+
+    auto spaceLeft = constraints.maxWidth - fixedWidgetWidth;
+    if (spaceLeft >= 0.0f) {
+      switch (mMainAxis) {
+        case MainAxis::Start:
+          position.x += 0.0f;
+          break;
+        case MainAxis::End:
+          position.x += spaceLeft;
+          break;
+        case MainAxis::Center:
+          position.x += spaceLeft / 2.0f;
+          break;
+      }
+    }
+  }
+
+  if (!flexibleWidgetHeightCount) {
+    flexibleWidgetHeightCount = 1;
+      
+    auto spaceLeft = constraints.maxHeight - fixedWidgetHeight;
+    if (spaceLeft >= 0.0f) {
+      switch (mCrossAxis) {
+        case CrossAxis::Start:
+          position.y += 0.0f;
+          break;
+        case CrossAxis::End:
+          position.y += spaceLeft;
+          break;
+        case CrossAxis::Center:
+          position.y += spaceLeft / 2.0f;
+          break;
+      }
+    }
+  }
+
+  childConstraints = Constraints(
+    0.0, 0.0,
+    (constraints.maxWidth  - paddingWidth) / flexibleWidgetWidthCount,
+    (constraints.maxHeight - paddingHeight)
   );
   for (auto& child : mChildren) {
     child->setPosition(position); // Parent tells the child what position to be at!
     auto childSize = child->layout(childConstraints);
 
-    totalWidth = childSize.x;
-    totalHeight += std::max(totalHeight, childSize.y);
+    totalWidth += childSize.x;
+    totalHeight = std::max(totalHeight, childSize.y);
 
     position.x  += childSize.x;
   }
@@ -95,12 +135,54 @@ Column::Handle Column::deserialize(const YAML::Node& node, std::vector<Deseriali
   auto color = deserializeColor(node["color"], errors);
   auto padding = deserializePadding(node["padding"], errors);
 
+  float width = INFINITY;
+  if (node.IsMap() && node["width"] && node["width"].IsScalar()) {
+    width = node["width"].as<float>();
+  }
+
+  float height = INFINITY;
+  if (node.IsMap() && node["height"] && node["height"].IsScalar()) {
+    height = node["height"].as<float>();
+  }
+
+  auto mainAxis = MainAxis::Center;
+  if (node.IsMap() && node["main-axis"] && node["main-axis"].IsScalar()) {
+    auto value = node["main-axis"].as<std::string>();
+    if (value == "start") {
+      mainAxis = MainAxis::Start;
+    } else if (value == "end"){
+      mainAxis = MainAxis::End;
+    } else if (value == "center") {
+      mainAxis = MainAxis::Center;
+    } else {
+      insertDeserializationError(errors, node["main-axis"].Mark(), "unknown main-axis type: " + value);
+    }
+  }
+
+  auto crossAxis = CrossAxis::Center;
+  if (node.IsMap() && node["cross-axis"] && node["cross-axis"].IsScalar()) {
+    auto value = node["cross-axis"].as<std::string>();
+    if (value == "start") {
+      crossAxis = CrossAxis::Start;
+    } else if (value == "end"){
+      crossAxis = CrossAxis::End;
+    } else if (value == "center") {
+      crossAxis = CrossAxis::Center;
+    } else {
+      insertDeserializationError(errors, node["cross-axis"].Mark(), "unknown main-axis type: " + value);
+    }
+  }
+
   auto result = Column::create();
   result->setId(id);
   result->setAlignment(Alignment::Center);
   result->mChildren = children;
   result->setColor(color);
   result->setPadding(Vec4{padding});
+  result->setWidth(width);
+  result->setHeight(height);
+  result->setMainAxis(mainAxis);
+  result->setCrossAxis(crossAxis);
   return result;
 }
 

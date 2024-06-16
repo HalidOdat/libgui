@@ -44,7 +44,10 @@ void Button::draw(Renderer2D& renderer) {
 
 Button::Handle Button::deserialize(const YAML::Node& node, std::vector<DeserializationError>& errors) {
   auto id = deserializeId(node["id"], errors);
-  auto color = deserializeColor(node["color"], errors);
+  auto color = Color::WHITE;
+  if (node["color"]) {
+    color = deserializeColor(node["color"], errors);
+  }
   auto background = deserializeColor(node["background"], errors);
 
   std::string text;
