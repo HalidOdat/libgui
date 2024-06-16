@@ -5,9 +5,29 @@ using namespace Gui;
 auto string = R"(
 column:
   children:
-    textarea:
-      id: input
-      font-size: 20
+    row:
+      children:
+        textarea:
+          id: input
+          font-size: 20
+          background: 0x292929
+          color: 0xdfdfdf
+        row:
+          id: log-section
+          height: 350
+          display: false    # Only display when there is an error/warning
+          color: 0x292929
+          children:
+            label:
+              text: "Errors:"
+              color: 0xff6347
+              margin: 5
+            textarea:
+              id: errors
+              font-size: 18
+              background: 0x292929
+              color: 0xdfdfdf
+              editable: false
     column:
       id: output
 )";
@@ -63,23 +83,36 @@ public:
 
     auto output = getById("output");
     auto input = getById("input");
-    input->as<TextArea>()->setOnChange([output](const auto& text) {
-      YAML::Node node;
+
+    auto logSection = getById("log-section");
+    auto errorsText = getById("errors");
+    input->as<TextArea>()->setOnChange([output, errorsText, logSection](const auto& text) {
+      Widget::Handle widget = nullptr;
       try {
-         node = YAML::Load(text);
+        auto node = YAML::Load(text);
+
+        std::vector<DeserializationError> errors;
+        widget = Widget::deserialize(node, errors);
+
+        if (!errors.empty()) {
+          std::string errorString = "\n";
+          for (auto& error : errors) {
+            errorString += "  " + std::to_string(error.line) + ":" + std::to_string(error.column) + ": " + error.message + "\n";
+            Logger::error("YAML:%d:%d: %s", error.line, error.column, error.message.c_str());
+          }
+          errorsText->as<TextArea>()->setText(errorString);
+          logSection->setDisplay(true);
+          return;
+        }
+        errorsText->as<TextArea>()->setText("");
+        logSection->setDisplay(false);
       } catch (YAML::ParserException& e) {
         auto mark = e.mark;
         Logger::error("YAML:%d:%d: %s", mark.line, mark.column, e.msg.c_str());
-        return;
-      }
-
-      std::vector<DeserializationError> errors;
-      Widget::Handle widget = Widget::deserialize(node, errors);
-
-      if (!errors.empty()) {
-        for (auto& error : errors) {
-          Logger::error("YAML:%d:%d: %s", error.line, error.column, error.message.c_str());
-        }
+        errorsText->as<TextArea>()->setText(
+          "\n  " + std::to_string(mark.line) + ":" + std::to_string(mark.line) + ": " + e.msg
+        );
+        logSection->setDisplay(true);
         return;
       }
 

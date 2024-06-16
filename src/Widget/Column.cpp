@@ -16,6 +16,21 @@ Vec2 Column::layout(Constraints constraints) {
   constraints.maxWidth   = std::min(constraints.maxWidth, mWidth);
   constraints.maxHeight  = std::min(constraints.maxHeight, mHeight);
 
+  if (mAlignment == Alignment::Center) {
+    constraints.minHeight = constraints.maxHeight;
+    constraints.minWidth = constraints.maxWidth;
+  } else if (mAlignment == Alignment::Vertical) {
+    constraints.minWidth = constraints.maxWidth;
+  } else if (mAlignment == Alignment::Horizontal) {
+    constraints.minHeight = constraints.maxHeight;
+  }
+  if (mFixedWidthSizeWidget) {
+    constraints.minWidth = mWidth;
+  }
+  if (mFixedHeightSizeWidget) {
+    constraints.minHeight = mHeight;
+  }
+
   size_t fixedWidgetWidthCount  = 0;
   size_t fixedWidgetHeightCount = 0;
   auto fixedWidgetWidth  = 0.0f;
@@ -28,6 +43,8 @@ Vec2 Column::layout(Constraints constraints) {
   auto totalWidth  = 0.0f;
   auto totalHeight = 0.0f;
 
+  auto actualChildrenCount = 0;
+
   auto childConstraints = Constraints(
     0.0, 0.0,
     (constraints.maxWidth  - paddingWidth) / mChildren.size(),
@@ -35,6 +52,10 @@ Vec2 Column::layout(Constraints constraints) {
   );
 
   for (auto& child : mChildren) {
+    if (!child->mDisplay) {
+      continue;
+    }
+    actualChildrenCount++;
     auto childSize = child->layout(childConstraints);
     if (child->mFixedWidthSizeWidget) {
       fixedWidgetWidthCount++;
@@ -46,16 +67,8 @@ Vec2 Column::layout(Constraints constraints) {
     }
   }
 
-  auto flexibleWidgetWidthCount = mChildren.size() - fixedWidgetWidthCount;
-  auto flexibleWidgetHeightCount = mChildren.size() - fixedWidgetHeightCount;
-  if (mAlignment == Alignment::Center) {
-    constraints.minHeight = constraints.maxHeight;
-    constraints.minWidth = constraints.maxWidth;
-  } else if (mAlignment == Alignment::Vertical) {
-    constraints.minWidth = constraints.maxWidth;
-  } else if (mAlignment == Alignment::Horizontal) {
-    constraints.minHeight = constraints.maxHeight;
-  }
+  auto flexibleWidgetWidthCount = actualChildrenCount - fixedWidgetWidthCount;
+  auto flexibleWidgetHeightCount = actualChildrenCount - fixedWidgetHeightCount;
   if (!flexibleWidgetWidthCount) {
     flexibleWidgetWidthCount = 1;
 
@@ -96,10 +109,13 @@ Vec2 Column::layout(Constraints constraints) {
 
   childConstraints = Constraints(
     0.0, 0.0,
-    (constraints.maxWidth  - paddingWidth) / flexibleWidgetWidthCount,
-    (constraints.maxHeight - paddingHeight)
+    (constraints.maxWidth  - fixedWidgetWidth  - paddingWidth) / flexibleWidgetWidthCount,
+    (constraints.maxHeight                     - paddingHeight)
   );
   for (auto& child : mChildren) {
+    if (!child->mDisplay) {
+      continue;
+    }
     child->setPosition(position); // Parent tells the child what position to be at!
     auto childSize = child->layout(childConstraints);
 
@@ -173,6 +189,11 @@ Column::Handle Column::deserialize(const YAML::Node& node, std::vector<Deseriali
     }
   }
 
+  bool display = true;
+  if (node.IsMap() && node["display"] && node["display"].IsScalar()) {
+    display = node["display"].as<bool>();
+  }
+
   auto result = Column::create();
   result->setId(id);
   result->setAlignment(Alignment::Center);
@@ -183,6 +204,7 @@ Column::Handle Column::deserialize(const YAML::Node& node, std::vector<Deseriali
   result->setHeight(height);
   result->setMainAxis(mainAxis);
   result->setCrossAxis(crossAxis);
+  result->setDisplay(display);
   return result;
 }
 

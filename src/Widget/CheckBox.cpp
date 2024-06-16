@@ -19,8 +19,8 @@ CheckBox::Handle CheckBox::create(OnChangeCallback callback) {
 Vec2 CheckBox::layout(Constraints constraints) {
   mFixedWidthSizeWidget = !std::isinf(mWidth);
   mFixedHeightSizeWidget = !std::isinf(mHeight);
-  mSize.x = std::min(mWidth, constraints.maxWidth);
-  mSize.y = std::min(mHeight, constraints.maxHeight);
+  mSize.x = mWidth;
+  mSize.y = mHeight;
   return mSize;
 }
 
@@ -71,6 +71,11 @@ CheckBox::Handle CheckBox::deserialize(const YAML::Node& node, std::vector<Deser
     height = node["height"].as<float>();
   }
 
+  bool display = true;
+  if (node.IsMap() && node["display"] && node["display"].IsScalar()) {
+    display = node["display"].as<bool>();
+  }
+
   auto result = CheckBox::create([](bool){});
   result->setId(id);
   result->setColor(color);
@@ -79,6 +84,7 @@ CheckBox::Handle CheckBox::deserialize(const YAML::Node& node, std::vector<Deser
   result->setMargin(Vec4{margin});
   result->setWidth(width);
   result->setHeight(height);
+  result->setDisplay(display);
   return result;
 }
 

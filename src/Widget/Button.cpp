@@ -75,6 +75,11 @@ Button::Handle Button::deserialize(const YAML::Node& node, std::vector<Deseriali
     height = node["height"].as<float>();
   }
 
+  bool display = true;
+  if (node.IsMap() && node["display"] && node["display"].IsScalar()) {
+    display = node["display"].as<bool>();
+  }
+
   auto result = Button::create(text, fontSize);
   result->setId(id);
   result->setColor(color);
@@ -82,6 +87,7 @@ Button::Handle Button::deserialize(const YAML::Node& node, std::vector<Deseriali
   result->setMargin(Vec4{margin});
   result->setWidth(width);
   result->setHeight(height);
+  result->setDisplay(display);
   return result;
 }
 

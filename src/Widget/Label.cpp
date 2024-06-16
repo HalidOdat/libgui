@@ -85,10 +85,16 @@ Label::Handle Label::deserialize(const YAML::Node& node, std::vector<Deserializa
     color = deserializeColor(node["color"], errors);
   }
 
+  bool display = true;
+  if (node.IsMap() && node["display"] && node["display"].IsScalar()) {
+    display = node["display"].as<bool>();
+  }
+
   auto result = Label::create(text, fontSize);
   result->setId(id);
   result->setColor(color);
   result->setMargin(Vec4{margin});
+  result->setDisplay(display);
   return result;
 }
 

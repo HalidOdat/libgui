@@ -82,6 +82,8 @@ public:
     inline bool isFocusable() const { return mFocusable; }
     inline const std::string& getId() const { return mId; }
     inline void setId(std::string id) { mId = id; }
+    inline bool getDisplay() const { return mDisplay; }
+    inline void setDisplay(bool value) { mDisplay = value; }
 
     static Widget::Handle deserialize(const YAML::Node& node, std::vector<DeserializationError>& errors);
 protected:
@@ -99,6 +101,7 @@ public:
     bool mFocused = false;
     bool mFixedWidthSizeWidget = false;
     bool mFixedHeightSizeWidget = false;
+    bool mDisplay = true;
 
     std::vector<ClickCallback> mClickCallbacks{};
     std::vector<KeyCallback> mKeyCallbacks{};

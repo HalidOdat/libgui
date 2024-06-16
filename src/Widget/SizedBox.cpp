@@ -40,10 +40,16 @@ SizedBox::Handle SizedBox::deserialize(const YAML::Node& node, std::vector<Deser
     height = node["height"].as<float>();
   }
 
+  bool display = true;
+  if (node.IsMap() && node["display"] && node["display"].IsScalar()) {
+    display = node["display"].as<bool>();
+  }
+
   auto result = SizedBox::create();
   result->setId(id);
   result->setColor(color);
   result->mSize = Vec2{width, height};
+  result->setDisplay(display);
   return result;
 }
 

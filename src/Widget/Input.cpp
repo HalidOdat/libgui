@@ -53,7 +53,7 @@ Input::Handle Input::create(OnChangeCallback callback, std::string text, float f
 
 Vec2 Input::layout(Constraints constraints) {
   mSize.x = constraints.maxWidth;
-  mSize.y = std::max(constraints.minHeight, std::min(constraints.maxHeight, mFontSize * 2.0f));
+  mSize.y = mFontSize * 2.0f;
   return mSize;
 }
 
@@ -114,11 +114,17 @@ Input::Handle Input::deserialize(const YAML::Node& node, std::vector<Deserializa
     color = deserializeColor(node["color"], errors);
   }
 
+  bool display = true;
+  if (node.IsMap() && node["display"] && node["display"].IsScalar()) {
+    display = node["display"].as<bool>();
+  }
+
   auto result = Input::create([](auto&){}, text, fontSize);
   result->setId(id);
   result->setType(type);
   result->setHint(hint);
   result->setColor(color);
+  result->setDisplay(display);
   return result;
 }
 

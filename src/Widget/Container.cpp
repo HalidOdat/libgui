@@ -29,6 +29,13 @@ Vec2 Container::layout(Constraints constraints) {
     constraints.minHeight = constraints.maxHeight;
   }
 
+  if (mFixedWidthSizeWidget) {
+    constraints.minWidth = mWidth;
+  }
+  if (mFixedHeightSizeWidget) {
+    constraints.minHeight = mHeight;
+  }
+
   size_t fixedWidgetWidthCount = 0;
   size_t fixedWidgetHeightCount = 0;
   auto fixedWidgetWidth  = 0.0f;
@@ -41,6 +48,8 @@ Vec2 Container::layout(Constraints constraints) {
   auto totalWidth  = 0.0f;
   auto totalHeight = 0.0f;
 
+  auto actualChildrenCount = 0;
+
   auto childConstraints = Constraints(
     0.0, 0.0,
     (constraints.maxWidth  - paddingWidth),
@@ -48,6 +57,10 @@ Vec2 Container::layout(Constraints constraints) {
   );
 
   for (auto& child : mChildren) {
+    if (!child->mDisplay) {
+      continue;
+    }
+    actualChildrenCount++;
     auto childSize = child->layout(childConstraints);
     if (child->mFixedWidthSizeWidget) {
       fixedWidgetWidthCount++;
@@ -59,7 +72,8 @@ Vec2 Container::layout(Constraints constraints) {
     }
   }
 
-  auto flexibleWidgetWidthCount = mChildren.size() - fixedWidgetWidthCount;
+  auto flexibleWidgetWidthCount = actualChildrenCount - fixedWidgetWidthCount;
+  auto flexibleWidgetHeightCount = actualChildrenCount - fixedWidgetHeightCount;
   if (!flexibleWidgetWidthCount) {
     flexibleWidgetWidthCount = 1;
       
@@ -78,7 +92,6 @@ Vec2 Container::layout(Constraints constraints) {
       }
     }
   }
-  auto flexibleWidgetHeightCount = mChildren.size() - fixedWidgetHeightCount;
   if (!flexibleWidgetHeightCount) {
     flexibleWidgetHeightCount = 1;
       
@@ -100,11 +113,15 @@ Vec2 Container::layout(Constraints constraints) {
 
   childConstraints = Constraints(
     0.0, 0.0,
-    (constraints.maxWidth  - paddingWidth),
-    (constraints.maxHeight - paddingHeight) / flexibleWidgetHeightCount
+    (constraints.maxWidth - paddingWidth),
+    (constraints.maxHeight - fixedWidgetHeight - paddingHeight) / flexibleWidgetHeightCount
   );
 
   for (auto& child : mChildren) {
+    if (!child->mDisplay) {
+      continue;
+    }
+
     child->setPosition(position); // Parent tells the child what position to be at!
     auto childSize = child->layout(childConstraints);
 
@@ -139,6 +156,9 @@ void Container::reportSize() const {
 void Container::draw(Renderer2D& renderer) {
   renderer.drawQuad(mPosition, mSize, mColor);
   for (auto child : mChildren) {
+    if (!child->mDisplay) {
+      continue;
+    }
     child->draw(renderer);
   }
 }
@@ -192,6 +212,11 @@ Container::Handle Container::deserialize(const YAML::Node& node, std::vector<Des
     }
   }
 
+  bool display = true;
+  if (node.IsMap() && node["display"] && node["display"].IsScalar()) {
+    display = node["display"].as<bool>();
+  }
+
   auto result = Container::create();
   result->setId(id);
   result->setAlignment(Alignment::Center);
@@ -202,6 +227,7 @@ Container::Handle Container::deserialize(const YAML::Node& node, std::vector<Des
   result->setHeight(height);
   result->setMainAxis(mainAxis);
   result->setCrossAxis(crossAxis);
+  result->setDisplay(display);
   return result;
 }
 
