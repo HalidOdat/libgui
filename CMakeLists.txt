@@ -144,13 +144,20 @@ if (DEFINED WEB)
     message(FATAL_ERROR "${This}: Building for web on windows could cause some errors. Please build in WSL")
   endif()
 
+  target_compile_options(${This}
+    PUBLIC
+      -fexceptions
+  )
+
   target_link_options(${This}
     PUBLIC
+      -fexceptions
       -sFULL_ES3=1
       -sUSE_WEBGL2=1
       -sMIN_WEBGL_VERSION=2
       -sMAX_WEBGL_VERSION=2
       -sALLOW_MEMORY_GROWTH=1
+      # -sEXCEPTION_CATCHING_ALLOWED=[..]
       # $<$<OR:$<CONFIG:Release>,$<CONFIG:MinSizeRel>>:--closure=1>
       $<$<OR:$<CONFIG:Release>,$<CONFIG:MinSizeRel>>:-sLZ4>
       $<$<CONFIG:MinSizeRel>:-flto=full>
